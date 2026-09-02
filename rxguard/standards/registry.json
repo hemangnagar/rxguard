@@ -1,0 +1,54 @@
+{
+  "registry_version": "0.1.0",
+  "claims": [
+    {
+      "id": "hl7:fhir-r4-pharmacy-eob",
+      "name": "HL7 FHIR R4 ExplanationOfBenefit",
+      "authority": "standard-backed",
+      "url": "https://hl7.org/fhir/R4/explanationofbenefit.html",
+      "implementation": "rxguard.fhir:build_pharmacy_eob",
+      "scope": "Structure used to represent combined claim and adjudication information."
+    },
+    {
+      "id": "carin-bb:pharmacy-eob-2.2.0",
+      "name": "CARIN Blue Button Pharmacy EOB 2.2.0",
+      "authority": "spec-referenced",
+      "url": "https://hl7.org/fhir/us/carin-bb/StructureDefinition/C4BB-ExplanationOfBenefit-Pharmacy/",
+      "implementation": "Profile URI is emitted; full implementation-guide conformance is not yet claimed.",
+      "scope": "Open U.S. pharmacy EOB profile based on FHIR R4."
+    },
+    {
+      "id": "nlm:rxnorm",
+      "name": "RxNorm",
+      "authority": "spec-referenced",
+      "url": "https://lhncbc.nlm.nih.gov/RxNav/APIs/RxNormAPIs.html",
+      "implementation": "Adapter seam only in v0.1; synthetic fixtures do not invent RxCUIs.",
+      "scope": "Normalized drug concepts."
+    },
+    {
+      "id": "fda:ndc-directory",
+      "name": "FDA National Drug Code Directory",
+      "authority": "spec-referenced",
+      "url": "https://open.fda.gov/apis/drug/ndc/",
+      "implementation": "Adapter seam only in v0.1; all fixture NDCs are synthetic.",
+      "scope": "Drug product and package identifiers."
+    },
+    {
+      "id": "cms:nadac",
+      "name": "CMS National Average Drug Acquisition Cost",
+      "authority": "source-backed",
+      "url": "https://www.medicaid.gov/medicaid/prescription-drugs/pharmacy-pricing",
+      "implementation": "Synthetic NADAC-like fixture values exercise benchmark calculations; they are not current CMS observations.",
+      "scope": "Public acquisition-cost benchmark, never represented as a pharmacy's actual cost."
+    },
+    {
+      "id": "rxguard:operational-event-0.1",
+      "name": "RxGuard Operational Event 0.1",
+      "authority": "declared",
+      "url": "docs/operational-event.md",
+      "implementation": "Pydantic-validated event content linked to source references.",
+      "scope": "Invoice costs, later adjustments, reversals and audit evidence not naturally represented by FHIR."
+    }
+  ]
+}
+

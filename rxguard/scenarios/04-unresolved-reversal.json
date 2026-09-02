@@ -1,0 +1,21 @@
+{
+  "id": "unresolved-reversal",
+  "title": "Reversal without a successful rebill",
+  "summary": "The medication was dispensed, the original claim was reversed, and no replacement payment is linked.",
+  "patient_ref": "Patient/synthetic-004",
+  "coverage_ref": "Coverage/synthetic-004",
+  "drug": {"display": "Synthetic inhaler 90 mcg", "ndc": "00000-4004-01", "rxcui": null, "quantity": 1},
+  "service_date": "2026-08-07",
+  "claim_status": "reversed",
+  "dispensed": true,
+  "ingredient_reimbursement": {"value": 0.00, "source_ref": "eob-reversal#item[0].adjudication[ingredient]", "description": "Reversed payer ingredient reimbursement"},
+  "dispensing_fee": {"value": 0.00, "source_ref": "eob-reversal#item[0].adjudication[dispensing-fee]", "description": "Reversed dispensing fee"},
+  "patient_pay": {"value": 0.00, "source_ref": "pos-reversal#patient-pay", "description": "Patient payment was reversed"},
+  "actual_acquisition_cost": {"value": 32.40, "source_ref": "invoice-2026-08-07.csv#row=27", "description": "Synthetic wholesaler invoice cost"},
+  "nadac_unit_cost": {"value": 31.90, "source_ref": "nadac-fixture.csv#ndc=00000-4004-01", "description": "Synthetic NADAC-like unit benchmark"},
+  "adjustments": [],
+  "rejection_reason": null,
+  "replacement_claim_ref": null,
+  "audit_requirements": []
+}
+

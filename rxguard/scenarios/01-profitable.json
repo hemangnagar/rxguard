@@ -1,0 +1,21 @@
+{
+  "id": "profitable-fill",
+  "title": "Routine profitable fill",
+  "summary": "A paid generic prescription with verified invoice cost and complete evidence.",
+  "patient_ref": "Patient/synthetic-001",
+  "coverage_ref": "Coverage/synthetic-001",
+  "drug": {"display": "Synthetic atorvastatin 20 mg tablet", "ndc": "00000-1001-30", "rxcui": null, "quantity": 30},
+  "service_date": "2026-08-01",
+  "claim_status": "paid",
+  "dispensed": true,
+  "ingredient_reimbursement": {"value": 21.00, "source_ref": "eob-profitable#item[0].adjudication[ingredient]", "description": "Synthetic payer ingredient reimbursement"},
+  "dispensing_fee": {"value": 2.00, "source_ref": "eob-profitable#item[0].adjudication[dispensing-fee]", "description": "Synthetic dispensing fee"},
+  "patient_pay": {"value": 5.00, "source_ref": "eob-profitable#item[0].adjudication[copay]", "description": "Synthetic patient payment"},
+  "actual_acquisition_cost": {"value": 11.00, "source_ref": "invoice-2026-08-01.csv#row=18", "description": "Synthetic wholesaler invoice cost"},
+  "nadac_unit_cost": {"value": 0.35, "source_ref": "nadac-fixture.csv#ndc=00000-1001-30", "description": "Synthetic NADAC-like unit benchmark"},
+  "adjustments": [],
+  "rejection_reason": null,
+  "replacement_claim_ref": null,
+  "audit_requirements": []
+}
+

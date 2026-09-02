@@ -1,0 +1,21 @@
+{
+  "id": "below-cost-fill",
+  "title": "Filled below acquisition cost",
+  "summary": "The paid amount looks substantial, but the verified invoice proves the prescription lost money.",
+  "patient_ref": "Patient/synthetic-002",
+  "coverage_ref": "Coverage/synthetic-002",
+  "drug": {"display": "Synthetic specialty tablet 10 mg", "ndc": "00000-2002-30", "rxcui": null, "quantity": 30},
+  "service_date": "2026-08-03",
+  "claim_status": "paid",
+  "dispensed": true,
+  "ingredient_reimbursement": {"value": 120.00, "source_ref": "eob-below-cost#item[0].adjudication[ingredient]", "description": "Synthetic payer ingredient reimbursement"},
+  "dispensing_fee": {"value": 1.50, "source_ref": "eob-below-cost#item[0].adjudication[dispensing-fee]", "description": "Synthetic dispensing fee"},
+  "patient_pay": {"value": 20.00, "source_ref": "eob-below-cost#item[0].adjudication[copay]", "description": "Synthetic patient payment"},
+  "actual_acquisition_cost": {"value": 158.00, "source_ref": "invoice-2026-08-03.csv#row=41", "description": "Synthetic wholesaler invoice cost"},
+  "nadac_unit_cost": {"value": 5.05, "source_ref": "nadac-fixture.csv#ndc=00000-2002-30", "description": "Synthetic NADAC-like unit benchmark"},
+  "adjustments": [],
+  "rejection_reason": null,
+  "replacement_claim_ref": null,
+  "audit_requirements": []
+}
+

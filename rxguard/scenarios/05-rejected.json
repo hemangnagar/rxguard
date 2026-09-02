@@ -1,0 +1,21 @@
+{
+  "id": "rejected-claim",
+  "title": "Rejected claim awaiting follow-up",
+  "summary": "The claim was rejected before dispensing and needs a staff decision.",
+  "patient_ref": "Patient/synthetic-005",
+  "coverage_ref": "Coverage/synthetic-005",
+  "drug": {"display": "Synthetic extended-release tablet 50 mg", "ndc": "00000-5005-30", "rxcui": null, "quantity": 30},
+  "service_date": "2026-08-09",
+  "claim_status": "rejected",
+  "dispensed": false,
+  "ingredient_reimbursement": {"value": 0.00, "source_ref": "claim-response-rejected#paid-ingredient", "description": "No ingredient reimbursement on rejected claim"},
+  "dispensing_fee": {"value": 0.00, "source_ref": "claim-response-rejected#paid-fee", "description": "No dispensing fee on rejected claim"},
+  "patient_pay": {"value": 0.00, "source_ref": "claim-response-rejected#patient-pay", "description": "No patient payment collected"},
+  "actual_acquisition_cost": null,
+  "nadac_unit_cost": {"value": 1.28, "source_ref": "nadac-fixture.csv#ndc=00000-5005-30", "description": "Synthetic NADAC-like unit benchmark"},
+  "adjustments": [],
+  "rejection_reason": "Coverage requires additional payer review before the prescription can be dispensed.",
+  "replacement_claim_ref": null,
+  "audit_requirements": []
+}
+

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RxGuard — Pharmacy exception workbench</title>
+  <meta name="description" content="Evidence-first pharmacy margin and exception analysis using synthetic, standards-based data.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="RxGuard home">
+      <span class="mark">Rx</span><span>Guard</span>
+    </a>
+    <div class="top-meta">
+      <span class="synthetic">Synthetic data only</span>
+      <a href="/docs">API</a>
+      <a href="https://github.com/hemangnagar/rxguard">GitHub</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div>
+        <p class="eyebrow">Pharmacy exception workbench</p>
+        <h1>See the loss before the next refill.</h1>
+        <p class="lede">RxGuard connects the payer response, invoice cost and later adjustments—then refuses to explain a dollar it cannot trace.</p>
+      </div>
+      <div class="principle" aria-label="System principle">
+        <span>AI proposes</span>
+        <i aria-hidden="true">→</i>
+        <strong>Evidence decides</strong>
+      </div>
+    </section>
+
+    <section class="metrics" aria-label="Scenario overview">
+      <article><span>Scenarios</span><strong id="metric-total">—</strong><small>reproducible fixtures</small></article>
+      <article><span>High priority</span><strong id="metric-high">—</strong><small>needs staff review</small></article>
+      <article><span>Verified losses</span><strong id="metric-loss">—</strong><small>invoice-backed</small></article>
+      <article><span>Unsupported dollars</span><strong>0</strong><small>explanation gate</small></article>
+    </section>
+
+    <section class="workspace" aria-label="RxGuard scenario workbench">
+      <div class="queue-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Exception queue</p>
+            <h2>Six claims. Four ways to lose.</h2>
+          </div>
+          <button id="run-all" type="button">Run all</button>
+        </div>
+        <div id="queue" class="queue" aria-live="polite">
+          <div class="loading">Loading synthetic scenarios…</div>
+        </div>
+      </div>
+
+      <aside class="detail-panel" id="detail" aria-live="polite">
+        <div class="empty-detail">
+          <span>↗</span>
+          <p>Select a claim to inspect its calculation and evidence.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="standards-strip" aria-labelledby="standards-title">
+      <div>
+        <p class="eyebrow">Built on open foundations</p>
+        <h2 id="standards-title">Use standards where they fit. Declare what they do not cover.</h2>
+      </div>
+      <div class="standards-list">
+        <span>FHIR R4/R4B</span>
+        <span>CARIN Pharmacy EOB</span>
+        <span>RxNorm</span>
+        <span>FDA NDC</span>
+        <span>CMS NADAC</span>
+        <span>RxGuard Event 0.1</span>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>RxGuard prototype · Every fixture is synthetic.</span>
+    <span>Not a clinical decision system. Not an NCPDP implementation.</span>
+  </footer>
+
+  <script src="/assets/app.js" defer></script>
+</body>
+</html>
+

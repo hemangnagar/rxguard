@@ -1,0 +1,24 @@
+{
+  "id": "audit-evidence-gap",
+  "title": "PBM audit packet is incomplete",
+  "summary": "The fill is profitable, but a required proof-of-delivery document is missing.",
+  "patient_ref": "Patient/synthetic-006",
+  "coverage_ref": "Coverage/synthetic-006",
+  "drug": {"display": "Synthetic refrigerated pen 100 units/mL", "ndc": "00000-6006-03", "rxcui": null, "quantity": 3},
+  "service_date": "2026-08-11",
+  "claim_status": "paid",
+  "dispensed": true,
+  "ingredient_reimbursement": {"value": 54.00, "source_ref": "eob-audit#item[0].adjudication[ingredient]", "description": "Synthetic payer ingredient reimbursement"},
+  "dispensing_fee": {"value": 1.50, "source_ref": "eob-audit#item[0].adjudication[dispensing-fee]", "description": "Synthetic dispensing fee"},
+  "patient_pay": {"value": 5.00, "source_ref": "eob-audit#item[0].adjudication[copay]", "description": "Synthetic patient payment"},
+  "actual_acquisition_cost": {"value": 42.20, "source_ref": "invoice-2026-08-11.csv#row=62", "description": "Synthetic wholesaler invoice cost"},
+  "nadac_unit_cost": {"value": 13.95, "source_ref": "nadac-fixture.csv#ndc=00000-6006-03", "description": "Synthetic NADAC-like unit benchmark"},
+  "adjustments": [],
+  "rejection_reason": null,
+  "replacement_claim_ref": null,
+  "audit_requirements": [
+    {"document": "prescription image", "present": true, "source_ref": "audit-packet-6201#rx-image"},
+    {"document": "proof of delivery", "present": false, "source_ref": "audit-packet-6201#delivery"}
+  ]
+}
+

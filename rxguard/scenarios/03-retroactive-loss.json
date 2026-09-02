@@ -1,0 +1,23 @@
+{
+  "id": "retroactive-loss",
+  "title": "Later adjustment erased the margin",
+  "summary": "A fill that earned $15.90 initially becomes a $5.85 loss after reconciliation.",
+  "patient_ref": "Patient/synthetic-003",
+  "coverage_ref": "Coverage/synthetic-003",
+  "drug": {"display": "Synthetic injectable 2 mg", "ndc": "00000-3003-01", "rxcui": null, "quantity": 1},
+  "service_date": "2026-08-05",
+  "claim_status": "paid",
+  "dispensed": true,
+  "ingredient_reimbursement": {"value": 412.60, "source_ref": "eob-retro#item[0].adjudication[ingredient]", "description": "Synthetic payer ingredient reimbursement"},
+  "dispensing_fee": {"value": 1.50, "source_ref": "eob-retro#item[0].adjudication[dispensing-fee]", "description": "Synthetic dispensing fee"},
+  "patient_pay": {"value": 0.00, "source_ref": "eob-retro#item[0].adjudication[copay]", "description": "Synthetic patient payment"},
+  "actual_acquisition_cost": {"value": 398.20, "source_ref": "invoice-2026-08-05.csv#row=9", "description": "Synthetic wholesaler invoice cost"},
+  "nadac_unit_cost": {"value": 401.75, "source_ref": "nadac-fixture.csv#ndc=00000-3003-01", "description": "Synthetic NADAC-like unit benchmark"},
+  "adjustments": [
+    {"id": "adj-retro-1", "effective_date": "2026-08-22", "amount": {"value": -21.75, "source_ref": "remittance-2026-08-22.csv#row=184", "description": "Synthetic payer reconciliation adjustment"}, "reason": "payer reconciliation"}
+  ],
+  "rejection_reason": null,
+  "replacement_claim_ref": null,
+  "audit_requirements": []
+}
+

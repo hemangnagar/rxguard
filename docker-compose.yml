@@ -1,0 +1,9 @@
+services:
+  rxguard:
+    build: .
+    image: rxguard:local
+    ports:
+      - "127.0.0.1:8094:8094"
+    environment:
+      RXGUARD_EXPLAINER: offline
+

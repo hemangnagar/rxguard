@@ -13,6 +13,12 @@ All patients, products, claims, invoices and prices in this repository are
 **synthetic**. RxGuard is not a clinical decision system, does not implement
 NCPDP, and does not claim HIPAA compliance.
 
+## Live demo
+
+Open the interactive, synthetic-data demo: **[rxguard-demo.hemnag.chatgpt.site](https://rxguard-demo.hemnag.chatgpt.site)**
+
+Select any claim to inspect the deterministic calculation, source evidence and generated FHIR `ExplanationOfBenefit`.
+
 ## Why this exists
 
 A fill can look profitable on adjudication day and become a loss after a later

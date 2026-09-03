@@ -348,6 +348,22 @@
     margin-top: 18px; padding-top: 10px;
   }
 
+  /* ---- provenance ---- */
+  .prov { margin-top: 12px; }
+  .prov-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 6px; }
+  .prov-h {
+    font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em;
+    font-weight: 700; margin: 0 0 6px;
+  }
+  .prov-h.real  { color: var(--paid-text); }
+  .prov-h.simp  { color: var(--short); }
+  .prov-h.synth { color: var(--muted); }
+  .prov ul { margin: 0; padding-left: 16px; font-size: 12.5px; color: var(--ink-2); }
+  .prov li { margin-bottom: 7px; }
+  .prov li:last-child { margin-bottom: 0; }
+  .prov-src { font-size: 12px; color: var(--muted); margin: 14px 0 0; border-top: 1px dashed var(--baseline); padding-top: 10px; }
+  @media (max-width: 900px) { .prov-grid { grid-template-columns: 1fr; } }
+
   footer.fine {
     margin-top: 28px; font-size: 12px; color: var(--muted); max-width: 88ch; line-height: 1.6;
   }
@@ -428,6 +444,46 @@
         <tbody id="tbody"></tbody>
       </table>
     </div>
+  </section>
+
+  <section class="panel prov">
+    <h2>Data provenance</h2>
+    <p class="note">Exactly where this demo touches reality — and where it doesn't.</p>
+    <div class="prov-grid">
+      <div>
+        <h4 class="prov-h real">Real</h4>
+        <ul>
+          <li>The Medicare Drug Price Negotiation Program and its Jan&nbsp;1,&nbsp;2026 effective date; manufacturer refunds routed through the CMS Medicare Transaction Facilitator.</li>
+          <li>The 14-calendar-day refund standard (42&nbsp;U.S.C. §1320f-2 and CMS program guidance).</li>
+          <li>All eight drugs shown, matched to their actual manufacturers, are among the ten selected drugs.</li>
+          <li>The MFP column holds CMS&rsquo;s published 2026 negotiated prices for a 30-day supply ($231 Eliquis &hellip; $2,355 Enbrel).</li>
+          <li>The cash-flow pain is documented: NCPA estimates roughly $11K/week floated per pharmacy, with real-world payment averaging ~21 days against the 14-day standard — this ledger&rsquo;s median of 20 days was tuned to that.</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="prov-h simp">Real, but simplified</h4>
+        <ul>
+          <li>&ldquo;Expected refund = WAC&nbsp;&minus;&nbsp;MFP&rdquo; is the standard industry simplification; the true basis is the dispenser&rsquo;s actual acquisition price, usually WAC minus a wholesaler discount.</li>
+          <li>WAC figures are representative list prices, not verified current WACs — the MFP side is exact, the WAC side is approximate.</li>
+          <li>The 14-day clock here starts at MTF transmission; CMS guidance carries receipt-and-verification nuance a real system must model.</li>
+          <li>Every fill is modeled as a retrospective refund — the dominant 2026 pattern, though prospective effectuation exists.</li>
+          <li>NDCs are correctly formatted and largely match real products, but were not verified against the FDA NDC directory.</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="prov-h synth">Fabricated</h4>
+        <ul>
+          <li>The pharmacy, its address and NCPDP number; every Rx number, invoice line, MTF reference, ACH trace, adjudication ID, fill date, deposit, and short-payment — all generated deterministically from a fixed seed.</li>
+          <li>The letter&rsquo;s addressee (&ldquo;Medicare MFP Effectuation Team&rdquo;) is an invented label, and the letter paraphrases the refund requirement rather than citing it.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="prov-src">Sources:
+      <a href="https://www.cms.gov/files/document/pharmacy-dispensing-entity-mtf-fact-sheet.pdf">CMS pharmacy/dispensing-entity MTF fact sheet (PDF)</a> ·
+      <a href="https://www.cms.gov/inflation-reduction-act-and-medicare/medicare-drug-price-negotiation">CMS Medicare Drug Price Negotiation Program</a> ·
+      <a href="https://ncpa.org/newsroom/news-releases/2025/06/13/ascp-and-ncpa-announce-joint-recommendations-manufacturers">NCPA/ASCP joint recommendations (Jun 2025)</a> ·
+      <a href="https://ncpa.org/newsroom/qam/2026/08/17/ncpa-submits-comments-cms-mdpnp">NCPA comments to CMS (Aug 2026)</a>
+    </p>
   </section>
 
   <footer class="fine">

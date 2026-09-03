@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>RxGuard MFP Ledger</title>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f5f7f6;
+    --surface: #fcfdfc;
+    --surface-2: #f0f3f1;
+    --ink: #16201b;
+    --ink-2: #54635c;
+    --muted: #7d8b84;
+    --line: #e2e7e4;
+    --baseline: #c6cec9;
+    --accent: #0d6b60;
+    --accent-soft: #e2efec;
+    --on-accent: #ffffff;
+    --pending: #2a78d6;      --pending-bg: #e8f1fb;
+    --paid: #0ca30c;         --paid-text: #087026;  --paid-bg: #e6f4e6;
+    --short: #b97900;        --short-bg: #fbf1dc;
+    --overdue: #d03b3b;      --overdue-bg: #fbe9e9;
+    --age-1: #2a78d6; --age-2: #eda100; --age-3: #d03b3b;
+    --shadow: 0 12px 32px rgba(22,32,27,.14);
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0e1210;
+      --surface: #171d1a;
+      --surface-2: #1e2622;
+      --ink: #eef3f0;
+      --ink-2: #a9b6af;
+      --muted: #78857e;
+      --line: #29322d;
+      --baseline: #39433d;
+      --accent: #4bb8a7;
+      --accent-soft: #16302b;
+      --on-accent: #0c1512;
+      --pending: #3987e5;      --pending-bg: #17273a;
+      --paid: #0ca30c;         --paid-text: #45c06c;  --paid-bg: #14291a;
+      --short: #d99a1c;        --short-bg: #322611;
+      --overdue: #e15e5e;      --overdue-bg: #351a1a;
+      --age-1: #3987e5; --age-2: #c98500; --age-3: #d03b3b;
+      --shadow: 0 12px 32px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0e1210;
+    --surface: #171d1a;
+    --surface-2: #1e2622;
+    --ink: #eef3f0;
+    --ink-2: #a9b6af;
+    --muted: #78857e;
+    --line: #29322d;
+    --baseline: #39433d;
+    --accent: #4bb8a7;
+    --accent-soft: #16302b;
+    --on-accent: #0c1512;
+    --pending: #3987e5;      --pending-bg: #17273a;
+    --paid: #0ca30c;         --paid-text: #45c06c;  --paid-bg: #14291a;
+    --short: #d99a1c;        --short-bg: #322611;
+    --overdue: #e15e5e;      --overdue-bg: #351a1a;
+    --age-1: #3987e5; --age-2: #c98500; --age-3: #d03b3b;
+    --shadow: 0 12px 32px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14.5px;
+    line-height: 1.5;
+    margin: 0;
+  }
+  a { color: var(--accent); }
+
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 20px 56px; }
+
+  /* ---- header ---- */
+  .synth-strip {
+    background: var(--short-bg);
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
+    font-size: 12.5px;
+    text-align: center;
+    padding: 6px 16px;
+  }
+  .synth-strip strong { color: var(--short); letter-spacing: .04em; }
+  header.app {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 22px 0 6px;
+  }
+  .wordmark { display: flex; align-items: baseline; gap: 10px; }
+  .wordmark .rx {
+    font-weight: 700; font-size: 21px; letter-spacing: -0.01em;
+  }
+  .wordmark .rx span { color: var(--accent); }
+  .wordmark .module {
+    font-size: 13px; font-weight: 600; color: var(--ink-2);
+    border-left: 1px solid var(--baseline); padding-left: 10px;
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+  .store {
+    margin-left: auto; text-align: right; font-size: 13px; color: var(--ink-2);
+  }
+  .store b { color: var(--ink); font-weight: 600; }
+
+  .mechanism {
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 14px 0 22px;
+    color: var(--ink-2);
+    font-size: 13.5px;
+    max-width: 72ch;
+  }
+  .mechanism b { color: var(--ink); }
+
+  /* ---- KPI row ---- */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px 12px;
+  }
+  .kpi .lbl {
+    font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em;
+    color: var(--muted); font-weight: 600;
+  }
+  .kpi .val { font-size: 27px; font-weight: 700; letter-spacing: -0.01em; margin-top: 4px; }
+  .kpi .sub { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+  .kpi .val.bad { color: var(--overdue); }
+  .kpi .val.warn { color: var(--short); }
+
+  /* ---- panels ---- */
+  .row2 { display: grid; grid-template-columns: 5fr 7fr; gap: 12px; margin-top: 12px; }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+  .panel h2 {
+    font-size: 13px; margin: 0 0 2px; font-weight: 700;
+    letter-spacing: .02em;
+  }
+  .panel .note { font-size: 12px; color: var(--muted); margin: 0 0 14px; }
+
+  /* aging bars */
+  .aging { display: grid; gap: 12px; margin-top: 18px; }
+  .age-row { display: grid; grid-template-columns: 132px 1fr; gap: 10px; align-items: center; }
+  .age-name { font-size: 12.5px; color: var(--ink-2); line-height: 1.3; }
+  .age-name b { display: block; color: var(--ink); font-size: 13px; }
+  .age-track { position: relative; height: 22px; }
+  .age-bar {
+    height: 100%; border-radius: 0 4px 4px 0; min-width: 2px;
+    display: flex; align-items: center;
+  }
+  .age-amt {
+    font-family: var(--mono); font-size: 12.5px; font-weight: 600;
+    margin-left: 8px; white-space: nowrap; color: var(--ink);
+    position: absolute; left: 100%; top: 50%; transform: translateY(-50%);
+  }
+  .age-bar-wrap { position: relative; display: inline-block; height: 22px; vertical-align: middle; }
+  .aging-base { border-left: 2px solid var(--baseline); padding-left: 0; }
+
+  /* weekly chart */
+  .chart-legend {
+    display: flex; gap: 18px; font-size: 12px; color: var(--ink-2);
+    margin-bottom: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .chart-legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--accent); vertical-align: -2px; margin-right: 6px; }
+  .chart-legend .dash {
+    display: inline-block; width: 18px; border-top: 2px dashed var(--ink-2); vertical-align: 3px; margin-right: 6px;
+  }
+  #weekly { width: 100%; height: auto; display: block; }
+  .tip {
+    position: fixed; z-index: 40; pointer-events: none;
+    background: var(--surface); color: var(--ink);
+    border: 1px solid var(--line); box-shadow: var(--shadow);
+    border-radius: 6px; padding: 8px 11px; font-size: 12.5px;
+    display: none; max-width: 240px;
+  }
+  .tip b { font-family: var(--mono); }
+
+  /* ---- ledger ---- */
+  .ledger { margin-top: 12px; }
+  .ledger-head {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    font: 600 12.5px var(--sans); color: var(--ink-2);
+    background: var(--surface-2); border: 1px solid var(--line);
+    border-radius: 999px; padding: 5px 12px; cursor: pointer;
+  }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .chip:focus-visible, .rowbtn:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ledger-sum { margin-left: auto; font-size: 12.5px; color: var(--muted); }
+
+  .tblwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 860px; }
+  thead th {
+    text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .07em;
+    color: var(--muted); font-weight: 600; padding: 10px 14px;
+    border-bottom: 1px solid var(--line); white-space: nowrap;
+    background: var(--surface);
+  }
+  tbody td {
+    padding: 9px 14px; border-bottom: 1px solid var(--line);
+    font-size: 13.5px; white-space: nowrap; vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover td { background: var(--surface-2); }
+  td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .rxno { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); }
+  .drugcell b { font-weight: 600; }
+  .drugcell .ndc { font-family: var(--mono); font-size: 11.5px; color: var(--muted); display: block; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; border-radius: 999px; padding: 3px 10px;
+    white-space: nowrap;
+  }
+  .pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .pill.pending { color: var(--pending); background: var(--pending-bg); }
+  .pill.paid    { color: var(--paid-text); background: var(--paid-bg); }
+  .pill.short   { color: var(--short); background: var(--short-bg); }
+  .pill.overdue { color: var(--overdue); background: var(--overdue-bg); }
+  .agecell { font-size: 12px; color: var(--overdue); font-weight: 600; }
+
+  .spot {
+    display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+    border: 1px solid var(--overdue);
+    background: var(--overdue-bg);
+    border-radius: 8px; padding: 12px 16px; margin-top: 12px;
+  }
+  .spot .t { font-size: 13.5px; }
+  .spot .t b { font-family: var(--mono); }
+  .spot button {
+    margin-left: auto;
+    background: var(--overdue); color: #fff; border: none; border-radius: 6px;
+    font: 600 13px var(--sans); padding: 8px 14px; cursor: pointer;
+  }
+
+  /* ---- drawer ---- */
+  .scrim {
+    position: fixed; inset: 0; background: rgba(10,16,13,.45);
+    z-index: 60;
+  }
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 61;
+    width: min(560px, 100%);
+    background: var(--surface);
+    border-left: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    overflow-y: auto;
+    padding: 22px 24px 32px;
+  }
+  .drawer .close {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-2);
+    border-radius: 6px; width: 30px; height: 30px; cursor: pointer; font-size: 15px; line-height: 1;
+  }
+  .ep-tag {
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    letter-spacing: .03em;
+  }
+  .drawer h3 { margin: 4px 0 2px; font-size: 18px; letter-spacing: -0.01em; }
+  .drawer .meta { font-size: 12.5px; color: var(--ink-2); margin-bottom: 14px; }
+  .drawer .meta .rxno { color: var(--ink-2); }
+
+  .calc {
+    font-family: var(--mono); font-size: 13px;
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--surface-2);
+    padding: 12px 14px; margin: 14px 0;
+  }
+  .calc .cl { display: flex; gap: 10px; padding: 3px 0; align-items: baseline; }
+  .calc .cl .k { color: var(--ink-2); }
+  .calc .cl .ref { color: var(--muted); font-size: 11px; }
+  .calc .cl .v { margin-left: auto; font-variant-numeric: tabular-nums; }
+  .calc .cl.total { border-top: 1px solid var(--baseline); margin-top: 6px; padding-top: 8px; font-weight: 600; }
+  .calc .cl.variance .v { font-weight: 600; }
+  .calc .cl.variance.bad .v { color: var(--overdue); }
+  .calc .cl.variance.ok .v { color: var(--paid-text); }
+
+  .sec-h {
+    font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); font-weight: 700; margin: 20px 0 8px;
+  }
+  .timeline { list-style: none; margin: 0; padding: 0; }
+  .timeline li {
+    position: relative; padding: 0 0 14px 24px; font-size: 13.5px;
+  }
+  .timeline li::before {
+    content: ""; position: absolute; left: 5px; top: 5px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--baseline);
+  }
+  .timeline li::after {
+    content: ""; position: absolute; left: 8.5px; top: 16px; bottom: -2px;
+    width: 1px; background: var(--line);
+  }
+  .timeline li:last-child::after { display: none; }
+  .timeline li.done::before { background: var(--accent); }
+  .timeline li.alarm::before { background: var(--overdue); }
+  .timeline li.alarm { color: var(--overdue); font-weight: 600; }
+  .timeline .d { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: 6px; }
+
+  .evtable { width: 100%; border-collapse: collapse; font-size: 12.5px; table-layout: fixed; }
+  .evtable td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: break-word; }
+  .evtable td:first-child { width: 31%; }
+  .evtable tr:last-child td { border-bottom: none; }
+  .evtable .sys { color: var(--ink-2); width: 37%; }
+  .evtable .id { font-family: var(--mono); font-size: 11.5px; text-align: right; padding-right: 0; }
+
+  .letter {
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--surface);
+    padding: 16px 18px; font-size: 13px; white-space: pre-wrap;
+    font-family: var(--mono); line-height: 1.65;
+    max-height: 340px; overflow-y: auto;
+  }
+  .letterbar { display: flex; gap: 8px; align-items: center; margin: 8px 0 0; }
+  .letterbar button {
+    background: var(--accent); color: var(--on-accent); border: none;
+    border-radius: 6px; font: 600 12.5px var(--sans); padding: 7px 13px; cursor: pointer;
+  }
+  .letterbar .copied { font-size: 12px; color: var(--paid-text); }
+  .guard {
+    font-size: 12px; color: var(--muted); border-top: 1px dashed var(--baseline);
+    margin-top: 18px; padding-top: 10px;
+  }
+
+  footer.fine {
+    margin-top: 28px; font-size: 12px; color: var(--muted); max-width: 88ch; line-height: 1.6;
+  }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 900px) {
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .row2 { grid-template-columns: 1fr; }
+    .store { margin-left: 0; text-align: left; width: 100%; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .drawer { animation: slidein .18s ease-out; }
+    @keyframes slidein { from { transform: translateX(24px); opacity: .4; } to { transform: none; opacity: 1; } }
+  }
+</style>
+
+<div class="synth-strip"><strong>SYNTHETIC DEMONSTRATION DATA</strong> — no real pharmacy, patients, claims, or payments. Prices are representative of published 2026 WAC / MFP figures.</div>
+
+<div class="wrap">
+  <header class="app">
+    <div class="wordmark">
+      <div class="rx">Rx<span>Guard</span></div>
+      <div class="module">MFP Refund Ledger</div>
+    </div>
+    <div class="store">
+      <b>Dogwood Pharmacy</b> · Vienna, VA · NCPDP 3947261<br>
+      Ledger as of <b>Tue, Sep 2, 2026</b>
+    </div>
+  </header>
+
+  <div class="mechanism">
+    Since Jan 1, 2026, this pharmacy buys the ten Medicare-negotiated drugs at roughly list price
+    (<b>WAC</b>) but is reimbursed against the lower <b>Maximum Fair Price</b>. The manufacturer owes
+    the gap on every fill as a refund routed through CMS&rsquo;s Medicare Transaction Facilitator —
+    due within <b>14 calendar days</b> of claim-data transmission. RxGuard reconciles each fill:
+    what&rsquo;s owed, what arrived, what&rsquo;s overdue — with a dispute-ready evidence pack.
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="row2">
+    <section class="panel">
+      <h2>Outstanding refunds by age</h2>
+      <p class="note">Age is measured from the refund due date (transmission&nbsp;+&nbsp;14 calendar days).</p>
+      <div class="aging aging-base" id="aging"></div>
+    </section>
+    <section class="panel">
+      <h2>Weekly refund cycle</h2>
+      <p class="note">Refunds falling due each week vs. deposits actually received that week.</p>
+      <div class="chart-legend">
+        <span><span class="sw"></span>Received</span>
+        <span><span class="dash"></span>Due per 14-day standard</span>
+      </div>
+      <svg id="weekly" viewBox="0 0 640 240" role="img" aria-label="Weekly refunds due versus received, ten weeks"></svg>
+    </section>
+  </div>
+
+  <div class="spot" id="spot"></div>
+
+  <section class="ledger">
+    <div class="ledger-head">
+      <div class="chips" id="chips" role="group" aria-label="Filter claims by status"></div>
+      <div class="ledger-sum" id="ledgersum"></div>
+    </div>
+    <div class="tblwrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Rx / Fill</th>
+            <th>Drug</th>
+            <th class="num">Acquired (WAC)</th>
+            <th class="num">MFP</th>
+            <th class="num">Refund expected</th>
+            <th class="num">Received</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="fine">
+    Every figure on this page is computed from the synthetic claim ledger below it — the
+    charts, tiles, and letters contain no number that does not resolve to a ledger row and a
+    source-record reference. That is the RxGuard rule: deterministic facts first; narration never
+    invents a dollar.<br><br>
+    All pharmacies, prescribers, prescription numbers, invoices, transaction IDs, and payments shown
+    are synthetic. Drug names and 2026 negotiated-price context appear for realism only; figures are
+    representative, not statements about any real transaction or party. Not affiliated with CMS, the
+    Medicare Transaction Facilitator, or any manufacturer. Prototype — not legal, billing, or
+    clinical advice.
+  </footer>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Claim evidence pack"></aside>
+
+<script>
+"use strict";
+/* ---------- synthetic ledger (curated, deterministic) ---------- */
+
+const DRUGS = {
+  eliquis:  { name: "Eliquis 5 mg",              generic: "apixaban",              ndc: "00003-0894-21", pkg: "60 tabs (30-day)",  wac: 594.00,  mfp: 231.00,  mfr: "Bristol Myers Squibb" },
+  jardiance:{ name: "Jardiance 25 mg",           generic: "empagliflozin",         ndc: "00597-0153-30", pkg: "30 tabs (30-day)",  wac: 611.00,  mfp: 197.00,  mfr: "Boehringer Ingelheim" },
+  xarelto:  { name: "Xarelto 20 mg",             generic: "rivaroxaban",           ndc: "50458-0579-30", pkg: "30 tabs (30-day)",  wac: 542.00,  mfp: 197.00,  mfr: "Janssen" },
+  januvia:  { name: "Januvia 100 mg",            generic: "sitagliptin",           ndc: "00006-0277-31", pkg: "30 tabs (30-day)",  wac: 563.00,  mfp: 113.00,  mfr: "Merck" },
+  farxiga:  { name: "Farxiga 10 mg",             generic: "dapagliflozin",         ndc: "00310-6210-30", pkg: "30 tabs (30-day)",  wac: 556.00,  mfp: 178.50, mfr: "AstraZeneca" },
+  entresto: { name: "Entresto 24/26 mg",         generic: "sacubitril/valsartan",  ndc: "00078-0659-20", pkg: "60 tabs (30-day)",  wac: 618.00,  mfp: 295.00,  mfr: "Novartis" },
+  novolog:  { name: "NovoLog FlexPen",           generic: "insulin aspart",        ndc: "00169-6339-10", pkg: "5 × 3 mL pens", wac: 347.00, mfp: 119.00,  mfr: "Novo Nordisk" },
+  enbrel:   { name: "Enbrel 50 mg SureClick",    generic: "etanercept",            ndc: "58406-0435-04", pkg: "4 auto-injectors",  wac: 7105.00, mfp: 2355.00, mfr: "Amgen" },
+};
+
+/* [drug, fillDate, outcome, arg]
+   outcome: P = paid in full after <arg> days from transmission
+            S = short-paid: paid <arg> dollars, after args[1] days
+            O = overdue (unpaid, past due date)
+            N = pending (unpaid, still inside 14-day window)          */
+const FILLS = [
+  ["eliquis","2026-06-22","P",16], ["jardiance","2026-06-23","P",21], ["novolog","2026-06-24","P",13],
+  ["xarelto","2026-06-25","P",24], ["eliquis","2026-06-26","P",19],
+  ["januvia","2026-06-29","P",27], ["farxiga","2026-06-30","P",18], ["eliquis","2026-07-01","P",22],
+  ["entresto","2026-07-02","P",20],
+  ["eliquis","2026-07-06","P",17], ["jardiance","2026-07-07","P",25], ["novolog","2026-07-08","P",14],
+  ["xarelto","2026-07-09","P",21], ["farxiga","2026-07-10","P",23],
+  ["eliquis","2026-07-13","P",19], ["januvia","2026-07-14","O",0],  ["jardiance","2026-07-15","P",26],
+  ["entresto","2026-07-16","P",18], ["novolog","2026-07-17","P",20],
+  ["eliquis","2026-07-20","P",22], ["xarelto","2026-07-21","O",0],  ["farxiga","2026-07-22","P",19],
+  ["enbrel","2026-07-23","S",[4137.50,23]], ["jardiance","2026-07-24","P",21],
+  ["eliquis","2026-07-27","P",24], ["januvia","2026-07-28","P",17], ["novolog","2026-07-29","O",0],
+  ["entresto","2026-07-30","P",25],
+  ["enbrel","2026-08-03","O",0],  ["eliquis","2026-08-04","P",20], ["jardiance","2026-08-05","O",0],
+  ["xarelto","2026-08-06","P",18], ["farxiga","2026-08-07","P",22],
+  ["eliquis","2026-08-10","P",16], ["januvia","2026-08-11","P",21], ["novolog","2026-08-12","P",19],
+  ["entresto","2026-08-13","O",0], ["jardiance","2026-08-14","P",17],
+  ["eliquis","2026-08-17","N",0],  ["xarelto","2026-08-18","P",15], ["farxiga","2026-08-19","S",[301.00,20]],
+  ["eliquis","2026-08-24","N",0],  ["januvia","2026-08-25","N",0],  ["jardiance","2026-08-26","N",0],
+  ["novolog","2026-08-27","N",0],
+  ["eliquis","2026-08-31","N",0],  ["entresto","2026-09-01","N",0],
+];
+
+const TODAY = new Date("2026-09-02T12:00:00");
+const DAY = 86400000;
+const d = s => new Date(s + "T12:00:00");
+const addDays = (dt, n) => new Date(dt.getTime() + n * DAY);
+const fmtD = dt => dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const fmtDY = dt => dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+const iso = dt => dt.toISOString().slice(0, 10);
+const usd = n => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+const daysBetween = (a, b) => Math.round((b - a) / DAY);
+
+// deterministic pseudo-ids from the fill date + drug (stable across loads)
+function hash(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+const CLAIMS = FILLS.map(([key, fill, outcome, arg], i) => {
+  const drug = DRUGS[key];
+  const fillDate = d(fill);
+  const h = hash(key + fill);
+  const sentDate = addDays(fillDate, 2 + (h % 3));            // MTF data transmitted 2-4 days after fill
+  const dueDate  = addDays(sentDate, 14);                     // CMS 14-calendar-day standard
+  const expected = +(drug.wac - drug.mfp).toFixed(2);
+  const rxNo = String(701000 + ((h % 89000) + i * 37) % 89000).padStart(6, "0");
+  const c = {
+    id: "C" + String(i + 1).padStart(3, "0"),
+    ep: "EP-2026-" + String(101 + i).padStart(4, "0"),
+    key, drug, rxNo, fillDate, sentDate, dueDate, expected,
+    mtfRef: "MTF-26-" + String(200000 + (h % 700000)).padStart(6, "0"),
+    invRef: "INV-" + String(280000 + (h % 19000)) + "/L" + (1 + (h % 22)),
+    adjRef: "D0-" + String(1000000 + (h % 8999999)),
+    received: 0, paidDate: null, ach: null, status: "pending",
+  };
+  if (outcome === "P") {
+    c.received = expected;
+    c.paidDate = addDays(sentDate, arg);
+    c.ach = "ACH " + String(910000000 + (h % 89999999));
+    c.status = "paid";
+    c.daysToRefund = arg;
+  } else if (outcome === "S") {
+    c.received = arg[0];
+    c.paidDate = addDays(sentDate, arg[1]);
+    c.ach = "ACH " + String(910000000 + (h % 89999999));
+    c.status = "short";
+    c.daysToRefund = arg[1];
+  } else if (outcome === "O") {
+    c.status = "overdue";
+  } else {
+    c.status = TODAY > dueDate ? "overdue" : "pending";
+  }
+  c.variance = +(expected - c.received).toFixed(2);
+  c.age = c.status === "overdue" ? daysBetween(c.dueDate, TODAY) : 0;
+  return c;
+});
+
+/* ---------- derived aggregates (single source of truth: CLAIMS) ---------- */
+
+const open = CLAIMS.filter(c => c.status === "pending" || c.status === "overdue");
+const overdue = CLAIMS.filter(c => c.status === "overdue");
+const shorts = CLAIMS.filter(c => c.status === "short");
+const paid = CLAIMS.filter(c => c.status === "paid" || c.status === "short");
+const sum = arr => +(arr.reduce((a, c) => a + c.variance, 0)).toFixed(2);
+const outstanding = sum(open) + sum(shorts);
+const overdueAmt = sum(overdue);
+const days = paid.map(c => c.daysToRefund).sort((a, b) => a - b);
+const medianDays = days.length ? days[Math.floor(days.length / 2)] : 0;
+const shortVar = sum(shorts);
+
+/* ---------- KPI tiles ---------- */
+
+const kpiEl = document.getElementById("kpis");
+kpiEl.innerHTML = `
+  <div class="kpi"><div class="lbl">Refunds outstanding</div>
+    <div class="val">${usd(outstanding)}</div>
+    <div class="sub">${open.length + shorts.length} claims awaiting full payment</div></div>
+  <div class="kpi"><div class="lbl">Past the 14-day standard</div>
+    <div class="val bad">${usd(overdueAmt)}</div>
+    <div class="sub">${overdue.length} claims overdue &middot; oldest ${Math.max(...overdue.map(c=>c.age))} days</div></div>
+  <div class="kpi"><div class="lbl">Median days to refund</div>
+    <div class="val warn">${medianDays} days</div>
+    <div class="sub">CMS standard: 14 calendar days</div></div>
+  <div class="kpi"><div class="lbl">Short-paid variance</div>
+    <div class="val warn">${usd(shortVar)}</div>
+    <div class="sub">${shorts.length} deposits below expected refund</div></div>`;
+
+/* ---------- aging bars ---------- */
+
+const buckets = [
+  { name: "1–14 days late",  cls: "age-1", test: c => c.age >= 1 && c.age <= 14 },
+  { name: "15–30 days late", cls: "age-2", test: c => c.age >= 15 && c.age <= 30 },
+  { name: "31+ days late",        cls: "age-3", test: c => c.age >= 31 },
+];
+const agingEl = document.getElementById("aging");
+const maxBucket = Math.max(...buckets.map(b => sum(overdue.filter(b.test))), 1);
+agingEl.innerHTML = buckets.map(b => {
+  const rows = overdue.filter(b.test);
+  const amt = sum(rows);
+  const w = Math.max(2, Math.round(amt / maxBucket * 62));
+  return `<div class="age-row">
+    <div class="age-name"><b>${b.name}</b>${rows.length} claim${rows.length === 1 ? "" : "s"}</div>
+    <div class="age-track"><span class="age-bar-wrap" style="width:${w}%">
+      <span class="age-bar" style="width:100%;background:var(--${b.cls})"></span>
+      <span class="age-amt">${usd(amt)}</span></span></div>
+  </div>`;
+}).join("");
+
+/* ---------- weekly chart ---------- */
+
+(function weekly() {
+  // week starts (Mondays) Jun 29 .. Aug 31
+  const starts = []; let w = d("2026-06-29");
+  while (w <= d("2026-08-31")) { starts.push(w); w = addDays(w, 7); }
+  const dueBy = starts.map(s => sum(CLAIMS.filter(c => c.dueDate >= s && c.dueDate < addDays(s, 7)).map(c => ({ variance: c.expected }))));
+  const recBy = starts.map(s => +CLAIMS.filter(c => c.paidDate && c.paidDate >= s && c.paidDate < addDays(s, 7))
+      .reduce((a, c) => a + c.received, 0).toFixed(2));
+
+  const W = 640, H = 240, L = 52, R = 12, T = 14, B = 30;
+  const max = Math.ceil(Math.max(...dueBy, ...recBy) / 2000) * 2000 || 2000;
+  const x = i => L + (W - L - R) * (i + 0.5) / starts.length;
+  const bw = (W - L - R) / starts.length * 0.52;
+  const y = v => T + (H - T - B) * (1 - v / max);
+
+  let g = "";
+  for (let v = 0; v <= max; v += 2000) {
+    g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/>
+          <text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="10.5" fill="var(--muted)" font-family="var(--mono)">${v === 0 ? "0" : "$" + v / 1000 + "k"}</text>`;
+  }
+  let bars = "", ticks = "";
+  starts.forEach((s, i) => {
+    bars += `<rect class="wk" data-i="${i}" x="${(x(i) - bw / 2).toFixed(1)}" y="${y(recBy[i]).toFixed(1)}"
+             width="${bw.toFixed(1)}" height="${(y(0) - y(recBy[i])).toFixed(1)}" rx="3" fill="var(--accent)"/>`;
+    if (i % 2 === 0) ticks += `<text x="${x(i)}" y="${H - 9}" text-anchor="middle" font-size="10.5" fill="var(--muted)">${fmtD(s)}</text>`;
+  });
+  let line = "";
+  starts.forEach((s, i) => {
+    const x0 = x(i) - bw / 2 - 4, x1 = x(i) + bw / 2 + 4, yy = y(dueBy[i]);
+    line += `<line x1="${x0.toFixed(1)}" x2="${x1.toFixed(1)}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"
+             stroke="var(--ink-2)" stroke-width="2" stroke-dasharray="5 3"/>`;
+    if (i < starts.length - 1) {
+      line += `<line x1="${x1.toFixed(1)}" x2="${(x(i + 1) - bw / 2 - 4).toFixed(1)}" y1="${yy.toFixed(1)}" y2="${y(dueBy[i + 1]).toFixed(1)}"
+               stroke="var(--ink-2)" stroke-width="1" stroke-dasharray="2 4" opacity=".55"/>`;
+    }
+  });
+  line += `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--baseline)" stroke-width="1.5"/>`;
+
+  const svg = document.getElementById("weekly");
+  svg.innerHTML = g + bars + line + ticks;
+
+  const tip = document.getElementById("tip");
+  svg.addEventListener("mousemove", e => {
+    const t = e.target.closest(".wk");
+    if (!t) { tip.style.display = "none"; return; }
+    const i = +t.dataset.i;
+    tip.innerHTML = `Week of ${fmtD(starts[i])}<br>Received <b>${usd(recBy[i])}</b><br>Due <b>${usd(dueBy[i])}</b>`;
+    tip.style.display = "block";
+    tip.style.left = Math.min(e.clientX + 14, innerWidth - 240) + "px";
+    tip.style.top = (e.clientY + 14) + "px";
+  });
+  svg.addEventListener("mouseleave", () => tip.style.display = "none");
+})();
+
+/* ---------- spotlight ---------- */
+
+const hero = overdue.slice().sort((a, b) => b.variance - a.variance)[0];
+const spotEl = document.getElementById("spot");
+spotEl.innerHTML = `
+  <div class="t">Largest overdue refund: <b>${usd(hero.variance)}</b> — ${hero.drug.name}
+    (Rx ${hero.rxNo}), due ${fmtD(hero.dueDate)}, <b>${hero.age} days</b> past the 14-day standard.</div>
+  <button id="spotbtn">Open evidence pack</button>`;
+document.getElementById("spotbtn").addEventListener("click", () => openDrawer(hero.id));
+
+/* ---------- ledger table ---------- */
+
+const STATUS_META = {
+  pending: { label: "Pending", cls: "pending" },
+  paid:    { label: "Paid",    cls: "paid" },
+  short:   { label: "Short-paid", cls: "short" },
+  overdue: { label: "Overdue", cls: "overdue" },
+};
+const FILTERS = [
+  ["all", "All"], ["overdue", "Overdue"], ["short", "Short-paid"], ["pending", "Pending"], ["paid", "Paid"],
+];
+let filter = "all";
+const chipsEl = document.getElementById("chips");
+chipsEl.innerHTML = FILTERS.map(([k, lbl]) => {
+  const n = k === "all" ? CLAIMS.length : CLAIMS.filter(c => c.status === k).length;
+  return `<button class="chip" data-f="${k}" aria-pressed="${k === filter}">${lbl} (${n})</button>`;
+}).join("");
+chipsEl.addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  filter = b.dataset.f;
+  chipsEl.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", c.dataset.f === filter));
+  renderTable();
+});
+
+const tbody = document.getElementById("tbody");
+function renderTable() {
+  const rows = CLAIMS.filter(c => filter === "all" || c.status === filter)
+    .slice().sort((a, b) => b.fillDate - a.fillDate);
+  tbody.innerHTML = rows.map(c => {
+    const m = STATUS_META[c.status];
+    const agestr = c.status === "overdue" ? ` <span class="agecell">+${c.age}d</span>` : "";
+    return `<tr tabindex="0" data-id="${c.id}" aria-label="Open evidence pack for Rx ${c.rxNo}">
+      <td><span class="rxno">Rx ${c.rxNo}</span><br><span class="rxno">${fmtD(c.fillDate)}</span></td>
+      <td class="drugcell"><b>${c.drug.name}</b><span class="ndc">NDC ${c.drug.ndc}</span></td>
+      <td class="num">${usd(c.drug.wac)}</td>
+      <td class="num">${usd(c.drug.mfp)}</td>
+      <td class="num"><b>${usd(c.expected)}</b></td>
+      <td class="num">${c.received ? usd(c.received) : "—"}</td>
+      <td><span class="pill ${m.cls}">${m.label}</span>${agestr}</td>
+    </tr>`;
+  }).join("");
+  document.getElementById("ledgersum").textContent =
+    `${rows.length} of ${CLAIMS.length} MFP claims · Jun 22 – Sep 1, 2026 · click a row for its evidence pack`;
+}
+renderTable();
+tbody.addEventListener("click", e => { const r = e.target.closest("tr"); if (r) openDrawer(r.dataset.id); });
+tbody.addEventListener("keydown", e => {
+  if (e.key === "Enter" || e.key === " ") { const r = e.target.closest("tr"); if (r) { e.preventDefault(); openDrawer(r.dataset.id); } }
+});
+
+/* ---------- evidence pack drawer ---------- */
+
+const drawer = document.getElementById("drawer");
+const scrim = document.getElementById("scrim");
+
+function letterFor(c) {
+  const kind = c.status === "short" ? "Short-paid" : "Overdue";
+  const remedy = c.status === "short"
+    ? `the balance of ${usd(c.variance)} (deposit ${c.ach} of ${usd(c.received)} received ${fmtDY(c.paidDate)} against an expected ${usd(c.expected)})`
+    : `the full refund of ${usd(c.variance)}`;
+  return `Dogwood Pharmacy · 123 Maple Ave SW, Vienna, VA 22180 · NCPDP 3947261
+
+${fmtDY(TODAY)}
+
+${c.drug.mfr} — Medicare MFP Effectuation Team
+via CMS Medicare Transaction Facilitator
+
+RE: ${kind} Maximum Fair Price refund — Rx ${c.rxNo}, NDC ${c.drug.ndc}
+
+On ${fmtDY(c.fillDate)} this pharmacy dispensed ${c.drug.name} (${c.drug.generic}), ${c.drug.pkg}, acquired at WAC ${usd(c.drug.wac)} (wholesaler invoice ${c.invRef}). Claim data was transmitted through the Medicare Transaction Facilitator on ${fmtDY(c.sentDate)} (ref ${c.mtfRef}; adjudication ${c.adjRef}).
+
+Under the standard default refund requirement, the refund of ${usd(c.expected)} — WAC ${usd(c.drug.wac)} less MFP ${usd(c.drug.mfp)} — was due within 14 calendar days, i.e. by ${fmtDY(c.dueDate)}. As of ${fmtDY(TODAY)}, our bank records reflect ${c.received ? "a deposit of only " + usd(c.received) : "no matching deposit"}.
+
+We request remittance of ${remedy} within five (5) business days, referencing ${c.mtfRef}. Absent payment, we will submit this evidence pack (${c.ep}) to CMS with a request for enforcement review, and reserve all other remedies.
+
+Sincerely,
+[Pharmacist-in-Charge], PharmD
+Dogwood Pharmacy
+
+Enclosure: Evidence Pack ${c.ep} (${[
+    "wholesaler invoice line", "adjudication response", "MTF transmission record",
+    c.received ? "ACH deposit record" : "bank-feed review through " + fmtDY(TODAY),
+  ].join(", ")})`;
+}
+
+function openDrawer(id) {
+  const c = CLAIMS.find(x => x.id === id); if (!c) return;
+  const m = STATUS_META[c.status];
+  const varCls = c.variance > 0 ? "bad" : "ok";
+  const needsLetter = c.status === "overdue" || c.status === "short";
+
+  const timeline = [
+    ["done", `Dispensed — ${c.drug.pkg}`, c.fillDate],
+    ["done", `Adjudicated (Part D) · <span class="d">${c.adjRef}</span>`, c.fillDate],
+    ["done", `Claim data transmitted via MTF · <span class="d">${c.mtfRef}</span>`, c.sentDate],
+    [TODAY >= c.dueDate ? "done" : "", "Refund due (transmission + 14 calendar days)", c.dueDate],
+  ];
+  if (c.status === "paid")   timeline.push(["done", `Refund received in full · <span class="d">${c.ach}</span> (${c.daysToRefund} days)`, c.paidDate]);
+  if (c.status === "short")  timeline.push(["alarm", `Deposit ${usd(c.received)} — ${usd(c.variance)} short · <span class="d">${c.ach}</span>`, c.paidDate]);
+  if (c.status === "overdue")timeline.push(["alarm", `No matching deposit — ${c.age} days past due`, TODAY]);
+  if (c.status === "pending")timeline.push(["", "Awaiting deposit — inside the 14-day window", TODAY]);
+
+  const evidence = [
+    ["Wholesaler invoice", "Cencora (ABC) EDI 810", c.invRef],
+    ["MFP unit price", "CMS negotiated-price public file (2026)", "MFP-2026 · " + c.drug.ndc],
+    ["Adjudication response", "Part D claim (B1) via switch", c.adjRef],
+    ["MTF transmission", "Medicare Transaction Facilitator", c.mtfRef],
+    c.ach ? ["Bank deposit", "Operating account ACH feed", c.ach + " · " + fmtD(c.paidDate)]
+          : ["Bank review", "Operating account ACH feed", "no matching credit through " + fmtD(TODAY)],
+  ];
+
+  drawer.innerHTML = `
+    <button class="close" aria-label="Close evidence pack">✕</button>
+    <div class="ep-tag">EVIDENCE PACK ${c.ep} · CLAIM ${c.id}</div>
+    <h3>${c.drug.name} <span style="color:var(--muted);font-weight:400">(${c.drug.generic})</span></h3>
+    <div class="meta">Rx <span class="rxno">${c.rxNo}</span> · filled ${fmtDY(c.fillDate)} · NDC
+      <span class="rxno">${c.drug.ndc}</span> · <span class="pill ${m.cls}">${m.label}</span></div>
+
+    <div class="calc">
+      <div class="cl"><span class="k">Acquisition (WAC, pkg)</span><span class="ref">${c.invRef}</span><span class="v">${usd(c.drug.wac)}</span></div>
+      <div class="cl"><span class="k">MFP price (CMS file)</span><span class="ref">MFP-2026</span><span class="v">− ${usd(c.drug.mfp)}</span></div>
+      <div class="cl total"><span class="k">Expected refund</span><span class="v">${usd(c.expected)}</span></div>
+      <div class="cl"><span class="k">Received</span><span class="ref">${c.ach || "—"}</span><span class="v">${usd(c.received)}</span></div>
+      <div class="cl variance ${varCls}"><span class="k">Variance</span><span class="v">${usd(c.variance)}</span></div>
+    </div>
+
+    <div class="sec-h">Timeline</div>
+    <ul class="timeline">
+      ${timeline.map(([cls, txt, dt]) => `<li class="${cls}">${txt}<span class="d">${fmtDY(dt)}</span></li>`).join("")}
+    </ul>
+
+    <div class="sec-h">Source evidence</div>
+    <table class="evtable">
+      ${evidence.map(([r, s, id]) => `<tr><td>${r}</td><td class="sys">${s}</td><td class="id">${id}</td></tr>`).join("")}
+    </table>
+
+    ${needsLetter ? `
+      <div class="sec-h">Escalation letter (generated from this pack)</div>
+      <div class="letter" id="letter">${letterFor(c)}</div>
+      <div class="letterbar">
+        <button id="copyletter">Copy letter text</button>
+        <span class="copied" id="copied" hidden>Copied</span>
+      </div>` : ""}
+
+    <div class="guard">Every dollar figure above resolves to a source record listed in this pack.
+    RxGuard narration — including the letter — is generated from the pack and cannot introduce
+    a number that is not in it. Synthetic data; identifiers are not real.</div>`;
+
+  drawer.hidden = false; scrim.hidden = false;
+  drawer.querySelector(".close").focus();
+  drawer.querySelector(".close").addEventListener("click", closeDrawer);
+  const cp = drawer.querySelector("#copyletter");
+  if (cp) cp.addEventListener("click", async () => {
+    const txt = drawer.querySelector("#letter").textContent;
+    try { await navigator.clipboard.writeText(txt); } catch (_) {
+      const rge = document.createRange(); rge.selectNodeContents(drawer.querySelector("#letter"));
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rge);
+    }
+    const ok = drawer.querySelector("#copied"); if (ok) ok.hidden = false;
+  });
+}
+function closeDrawer() { drawer.hidden = true; scrim.hidden = true; }
+scrim.addEventListener("click", closeDrawer);
+addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+</script>
+</body>
+</html>

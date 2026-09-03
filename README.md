@@ -50,6 +50,28 @@ the current RxGuard MVP so that RxGuard remains centered on pharmacy margin,
 reversal, rejection and audit workflows. A financial-governance demonstration
 may follow as a separate application rather than being folded into RxGuard.
 
+## MFP Refund Ledger (prototype, this branch)
+
+Since Jan 1, 2026, pharmacies acquire the ten Medicare-negotiated drugs at
+roughly WAC but are reimbursed against the lower Maximum Fair Price; the
+manufacturer owes the gap on every fill as a refund routed through CMS's
+Medicare Transaction Facilitator, due within 14 calendar days of claim-data
+transmission. This module reconciles that receivable stream the RxGuard way:
+
+- `rxguard/mfp_engine.py` — deterministic per-fill reconciliation
+  (expected refund = WAC − MFP, received, variance, status, aging) with every
+  amount carrying source-record references.
+- `rxguard/mfp_letter.py` — an escalation letter generated only from the fact
+  pack and rejected by an audit gate if it ever carries an unsourced dollar.
+- `rxguard/mfp_synthetic.py` — the deterministic synthetic ledger (47 fills,
+  pinned as-of date) that the API and the demo page both derive from.
+- API: `GET /api/mfp/summary`, `GET /api/mfp/claims`,
+  `GET /api/mfp/claims/{id}/evidence` · demo page: `GET /mfp`
+  (static build in `web/mfp.html`).
+
+All data is synthetic; prices are representative of published 2026 WAC/MFP
+figures. Not affiliated with CMS or any manufacturer.
+
 ## Run it
 
 ```bash

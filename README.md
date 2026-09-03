@@ -26,6 +26,24 @@ $414.10 revenue - $398.20 invoice cost =  $15.90 initial margin
 Every number carries a source reference. The model may narrate those facts; it
 does not calculate them.
 
+## Project context and future branch
+
+RxGuard grew out of a broader effort to build public, independently designed
+governance demonstrations for regulated data using synthetic data, open-source
+components and implemented industry standards. The pharmacy workbench is the
+first focused product: it applies those principles to pharmacy financial and
+operational exceptions without copying a private governed-data-platform or
+claiming compliance that the prototype has not proved.
+
+**CareGuardBench** is the planned healthcare-governance branch of this work. It
+will reuse the architectural principles—deterministic policy enforcement,
+traceable evidence, constrained AI explanations, FHIR-based interoperability
+and explicit conformance boundaries—while addressing broader healthcare data
+access, consent, provenance and audit scenarios. It is intentionally outside
+the current RxGuard MVP so that RxGuard remains centered on pharmacy margin,
+reversal, rejection and audit workflows. A financial-governance demonstration
+may follow as a separate application rather than being folded into RxGuard.
+
 ## Run it
 
 ```bash

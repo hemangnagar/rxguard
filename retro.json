@@ -1,0 +1,79 @@
+{
+  "date": "2026-09-03",
+  "repo": "rxguard",
+  "milestone": "MFP Refund Ledger shipped: mfp-refund-ledger branch pushed (engine + letter gate + API, 29/29 tests) and synthetic demo deployed to hemangnagar.dev/rxguard-mfp/",
+  "since": null,
+  "interview": {
+    "goal": "Started as 'build something a new-age engineer would build' on the grocery project; pivoted to pharmacy market-gap research after judging margin analytics too crowded; landed on the Medicare MFP refund-reconciliation wedge and shipped a synthetic prototype + RxGuard module in one day. The goal changed twice, both times deliberately.",
+    "slower_than_expected": "Verifying the live deploy: the sandbox egress proxy blocks hemangnagar.dev, so a curl-based poll loop burned its whole 420s timeout reporting nothing while looking like 'still deploying'. Resolved by checking the GitHub Pages Actions run instead. Everything else (research fan-out, module build) came in at or under expectation.",
+    "wrong_first": "(1) One synthetic claim was force-coded 'overdue' although its own dates put it inside the refund window; caught pre-publish because the aging buckets ($6,510) disagreed with the KPI tile ($6,873). Fix: derive status from dates. (2) The evidence-table reference IDs overflowed the drawer; caught in the single design screenshot. (3) The /retro handoff brief assumed learned-behavior review emits JSON; it emits text (upstream learning.py:command_review).",
+    "lb_candidates": "None \u2014 learned-behavior had no hook events in this environment (fresh cloud container, hooks not installed). Degraded mode per SKILL.md; question answered from session evidence instead.",
+    "answered_by": "agent-draft"
+  },
+  "lessons": [
+    {
+      "claim": "RxGuard's demo page and Python engine must derive from one shared spec table (same curated fills, same FNV-1a hash) so both surfaces tell one story; never let them drift.",
+      "evidence": [
+        "rxguard@456afd2",
+        "session:91182d7c"
+      ],
+      "scope": "project",
+      "confidence": 0.85,
+      "written_to": "learned-behavior",
+      "hits": 0
+    },
+    {
+      "claim": "Every RxGuard surface that narrates money (the MFP escalation letter included) goes through the explain.py-style audit gate: any dollar amount absent from the fact pack is a hard rejection.",
+      "evidence": [
+        "rxguard@456afd2:rxguard/mfp_letter.py",
+        "tests/test_mfp.py::test_letter_gate_rejects_an_amount_outside_the_fact_pack"
+      ],
+      "scope": "project",
+      "confidence": 0.9,
+      "written_to": "learned-behavior",
+      "hits": 0
+    },
+    {
+      "claim": "Before polling any external URL from a sandboxed agent, verify the egress proxy allows the domain; a blocked domain 403s forever and is indistinguishable from 'not ready yet' \u2014 verify deploys via the platform's own API instead (e.g. GitHub Pages Actions runs).",
+      "evidence": [
+        "session:91182d7c:task-be1f61f1r",
+        "rxguard-site deploy verification via actions_list"
+      ],
+      "scope": "global",
+      "confidence": 0.8,
+      "written_to": "playbook",
+      "hits": 0
+    },
+    {
+      "claim": "Before writing a parser against a third-party CLI, read its source or run it once to confirm the actual output format; do not trust a brief's claim about it.",
+      "evidence": [
+        "learned-behavior learning.py:command_review (text, not JSON as brief assumed)"
+      ],
+      "scope": "global",
+      "confidence": 0.7,
+      "written_to": "playbook",
+      "hits": 0
+    },
+    {
+      "claim": "On shallow git clones, address history by explicit sha, never HEAD~N \u2014 HEAD~N crosses the shallow boundary and errors.",
+      "evidence": [
+        "retro@inputs.py diffstat bug, first guinea-pig run"
+      ],
+      "scope": "stack:git",
+      "confidence": 0.8,
+      "written_to": "playbook",
+      "hits": 0
+    },
+    {
+      "claim": "In curated synthetic datasets, derive every status field from its underlying dates/values instead of force-coding it, and reconcile aggregates to row sums before publishing \u2014 the $363 KPI/aging mismatch was the bug detector.",
+      "evidence": [
+        "session:91182d7c (Eliquis 2026-08-17 forced-overdue fix)"
+      ],
+      "scope": "global",
+      "confidence": 0.6,
+      "written_to": "retro.json-only",
+      "note": "Held out of the playbook: it is the ancient single-source-of-truth principle wearing demo clothes; the SKILL.md bias check (>2 globals per retro is probably grandiose) fired and this was the weakest of three.",
+      "hits": 0
+    }
+  ]
+}

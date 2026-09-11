@@ -19,6 +19,8 @@ Open the interactive, synthetic-data demo: **[rxguard-demo.hemnag.chatgpt.site](
 
 Select any claim to inspect the deterministic calculation, source evidence and generated FHIR `ExplanationOfBenefit`.
 
+The Medicare **MFP Refund Ledger** demo is at **[hemangnagar.dev/rxguard-mfp](https://hemangnagar.dev/rxguard-mfp/)** (also served at `/mfp` when running locally). See [MFP Refund Ledger](#mfp-refund-ledger-prototype) below.
+
 ## Why this exists
 
 A fill can look profitable on adjudication day and become a loss after a later
@@ -50,7 +52,7 @@ the current RxGuard MVP so that RxGuard remains centered on pharmacy margin,
 reversal, rejection and audit workflows. A financial-governance demonstration
 may follow as a separate application rather than being folded into RxGuard.
 
-## MFP Refund Ledger (prototype, this branch)
+## MFP Refund Ledger (prototype)
 
 Since Jan 1, 2026, pharmacies acquire the ten Medicare-negotiated drugs at
 roughly WAC but are reimbursed against the lower Maximum Fair Price; the

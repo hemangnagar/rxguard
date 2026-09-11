@@ -106,6 +106,11 @@
     font-weight: 700; font-size: 21px; letter-spacing: -0.01em;
   }
   .wordmark .rx span { color: var(--accent); }
+  .wordmark .rx a { color: inherit; text-decoration: none; }
+  .wordmark .rx a:hover span { text-decoration: underline; }
+  .app-nav { display: flex; gap: 14px; font-size: 12.5px; }
+  .app-nav a { color: var(--ink-2); text-decoration: none; }
+  .app-nav a:hover { color: var(--accent); }
   .wordmark .module {
     font-size: 13px; font-weight: 600; color: var(--ink-2);
     border-left: 1px solid var(--baseline); padding-left: 10px;
@@ -385,9 +390,14 @@
 <div class="wrap">
   <header class="app">
     <div class="wordmark">
-      <div class="rx">Rx<span>Guard</span></div>
+      <div class="rx"><a href="/" aria-label="RxGuard home">Rx<span>Guard</span></a></div>
       <div class="module">MFP Refund Ledger</div>
     </div>
+    <nav class="app-nav" aria-label="RxGuard modules">
+      <a href="/">Margin workbench</a>
+      <a href="/docs">API</a>
+      <a href="https://github.com/hemangnagar/rxguard">GitHub</a>
+    </nav>
     <div class="store">
       <b>Dogwood Pharmacy</b> · Vienna, VA · NCPDP 3947261<br>
       Ledger as of <b>Tue, Sep 2, 2026</b>

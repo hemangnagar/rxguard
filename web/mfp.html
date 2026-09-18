@@ -130,7 +130,7 @@
   .mechanism b { color: var(--ink); }
 
   /* ---- KPI row ---- */
-  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
   .kpi {
     background: var(--surface);
     border: 1px solid var(--line);
@@ -214,7 +214,7 @@
   .ledger-sum { margin-left: auto; font-size: 12.5px; color: var(--muted); }
 
   .tblwrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
-  table { border-collapse: collapse; width: 100%; min-width: 860px; }
+  .tblwrap table { border-collapse: collapse; width: 100%; min-width: 860px; }
   thead th {
     text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .07em;
     color: var(--muted); font-weight: 600; padding: 10px 14px;
@@ -395,8 +395,40 @@
   .days-cell b { font-variant-numeric: tabular-nums; }
   .days-cell span { color: var(--muted); font-size: 11.5px; }
 
+  /* ---- therapeutic class cards ---- */
+  .cls-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+  .cls {
+    border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 13px 15px;
+  }
+  .cls.choice { border-color: var(--accent); }
+  .cls-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 9px; }
+  .cls-h b { font-size: 13.5px; }
+  .cls-h .tag {
+    font-size: 10.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    border-radius: 999px; padding: 2px 9px;
+  }
+  .cls-h .tag.choice { color: var(--accent); background: var(--accent-soft); }
+  .cls-h .tag.locked { color: var(--muted); background: var(--surface-2); }
+  table.opt { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.opt { table-layout: fixed; }
+  table.opt th {
+    text-align: right; font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); font-weight: 600; padding: 0 0 5px 6px;
+  }
+  table.opt th:first-child, table.opt td:first-child { width: 34%; }
+  table.opt .dname span { overflow-wrap: anywhere; }
+  table.opt th:first-child { text-align: left; padding-left: 0; }
+  table.opt td { padding: 5px 0 5px 8px; text-align: right; font-variant-numeric: tabular-nums; border-top: 1px solid var(--line); }
+  table.opt td:first-child { text-align: left; padding-left: 0; }
+  table.opt tr.best td { background: var(--paid-bg); }
+  table.opt .dname b { font-weight: 600; }
+  table.opt .dname span { display: block; font-size: 11px; color: var(--muted); }
+  .cls-take { font-size: 12px; color: var(--ink-2); margin-top: 9px; line-height: 1.5; border-top: 1px dashed var(--baseline); padding-top: 8px; }
+  .cls-take b { color: var(--ink); }
+  .badge-fast { font-size: 10px; font-weight: 700; color: var(--paid-text); letter-spacing: .05em; }
+
   /* ---- exception taxonomy ---- */
-  .exc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .exc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
   .exc {
     border: 1px solid var(--line); border-left: 3px solid var(--muted); border-radius: 6px;
     background: var(--surface); padding: 11px 13px;
@@ -412,7 +444,7 @@
   #floatchart { width: 100%; height: auto; display: block; }
 
   /* ---- projection ---- */
-  .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 4px; }
+  .proj-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 4px; }
   .proj { border: 1px solid var(--line); border-radius: 8px; padding: 13px 15px; background: var(--surface); }
   .proj.now { border-color: var(--baseline); }
   .proj.next { border-color: var(--accent); background: var(--accent-soft); }
@@ -437,6 +469,12 @@
   .ladder li.now { font-weight: 600; }
   .ladder .when { margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: var(--muted); white-space: nowrap; }
 
+  table.carry-list { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 12.5px; }
+  table.carry-list td { padding: 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; overflow-wrap: anywhere; }
+  table.carry-list tr:last-child td { border-bottom: none; }
+  table.carry-list td:first-child { width: 46%; padding-right: 12px; }
+  table.carry-list .sys { color: var(--ink-2); }
+
   .pattern-box {
     border: 1px solid var(--overdue); background: var(--overdue-bg); border-radius: 8px;
     padding: 11px 14px; margin: 14px 0; font-size: 13px;
@@ -444,16 +482,21 @@
   .pattern-box b { font-family: var(--mono); }
 
   @media (max-width: 900px) {
-    .exc-grid { grid-template-columns: 1fr 1fr; }
+    .cls-grid { grid-template-columns: minmax(0, 1fr); }
+    .exc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .proj-grid { grid-template-columns: 1fr; }
   }
 
   [hidden] { display: none !important; }
 
   @media (max-width: 900px) {
-    .kpis { grid-template-columns: 1fr 1fr; }
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .row2 { grid-template-columns: 1fr; }
     .store { margin-left: 0; text-align: left; width: 100%; }
+  }
+  @media (max-width: 560px) {
+    .kpis { grid-template-columns: minmax(0, 1fr); }
+    .exc-grid { grid-template-columns: minmax(0, 1fr); }
   }
   @media (prefers-reduced-motion: no-preference) {
     .drawer { animation: slidein .18s ease-out; }
@@ -501,9 +544,10 @@
   </section>
 
   <section class="panel" style="margin-top:12px">
-    <h2>Manufacturer compliance</h2>
-    <p class="note">One late refund is a billing question. A manufacturer that misses the statutory window on most
-      of its claims is a pattern — and a pattern is what a regulator acts on. Click a row for its evidence pack.</p>
+    <h2>Who is holding your cash</h2>
+    <p class="note">Every manufacturer on the negotiated list is a counterparty this pharmacy extends credit to,
+      whether it meant to or not. Payment behavior is the risk; total exposure across everything you stock from
+      them is the size of it. Click a row for the exposure and what can be done about it.</p>
     <div class="score-wrap">
       <table class="score">
         <thead>
@@ -511,6 +555,7 @@
             <th>Manufacturer</th>
             <th class="num">Claims</th>
             <th class="num">Refunds owed</th>
+            <th class="num">Products</th>
             <th>Paid within 14 days</th>
             <th class="num">Days to refund</th>
             <th class="num">Outstanding</th>
@@ -520,6 +565,18 @@
         <tbody id="scorebody"></tbody>
       </table>
     </div>
+  </section>
+
+  <section class="panel" style="margin-top:12px">
+    <h2>Where a slow payer is actually actionable</h2>
+    <p class="note">A pharmacy cannot switch manufacturers for a patented molecule, so payment behavior only
+      matters where it meets a decision the pharmacy actually controls: what to stock, how deep, and which product
+      to suggest when a prescriber is open to either. Grouped by therapeutic class below.</p>
+    <div class="cls-grid" id="classes"></div>
+    <p class="note" style="margin:12px 0 0"><b>This is a stocking and working-capital view, not a clinical
+      recommendation.</b> Therapeutic equivalence is the prescriber&rsquo;s call, and these products are not
+      interchangeable by default. Payment behavior belongs in the conversation only where the clinical choice is
+      already open.</p>
   </section>
 
   <section class="panel" style="margin-top:12px">
@@ -604,6 +661,11 @@
           <li>The 14-day clock here starts at MTF transmission; CMS guidance carries receipt-and-verification nuance a real system must model.</li>
           <li>Every fill is modeled as a retrospective refund — the dominant 2026 pattern, though prospective effectuation exists.</li>
           <li>NDCs are correctly formatted and largely match real products, but were not verified against the FDA NDC directory.</li>
+          <li>Therapeutic classes are assigned here, and only two pairs are marked comparable (the two factor&nbsp;Xa
+            inhibitors, and the two SGLT2 inhibitors). That is a coarse judgment: even within a class these products
+            differ by indication, dosing and evidence base, and nothing here should be read as a clinical equivalence claim.</li>
+          <li>Carrying cost assumes a 9.5% line-of-credit rate. The interest is modest at this volume; the binding
+            constraint for an independent is the working capital itself, not the interest on it.</li>
         </ul>
       </div>
       <div>
@@ -656,7 +718,27 @@ const DRUGS = {
   entresto: { name: "Entresto 24/26 mg",         generic: "sacubitril/valsartan",  ndc: "00078-0659-20", pkg: "60 tabs (30-day)",  wac: 618.00,  mfp: 295.00,  mfr: "Novartis" },
   novolog:  { name: "NovoLog FlexPen",           generic: "insulin aspart",        ndc: "00169-6339-10", pkg: "5 × 3 mL pens", wac: 347.00, mfp: 119.00,  mfr: "Novo Nordisk" },
   enbrel:   { name: "Enbrel 50 mg SureClick",    generic: "etanercept",            ndc: "58406-0435-04", pkg: "4 auto-injectors",  wac: 7105.00, mfp: 2355.00, mfr: "Amgen" },
+  stelara:  { name: "Stelara 90 mg/mL",          generic: "ustekinumab",           ndc: "57894-0060-03", pkg: "1 prefilled syringe", wac: 14000.00, mfp: 4695.00, mfr: "Janssen" },
 };
+
+/* Therapeutic class. Where a class holds two negotiated products from
+   different manufacturers, the pharmacy has a real choice to influence; where
+   it holds one, the exposure is structural and the lever is stocking. */
+const CLASSES = {
+  doac:    { label: "Oral anticoagulant (factor Xa)", keys: ["eliquis", "xarelto"], comparable: true },
+  sglt2:   { label: "SGLT2 inhibitor",                keys: ["jardiance", "farxiga"], comparable: true },
+  dpp4:    { label: "DPP-4 inhibitor",                keys: ["januvia"] },
+  arni:    { label: "Heart failure (ARNI)",           keys: ["entresto"] },
+  insulin: { label: "Rapid-acting insulin",           keys: ["novolog"] },
+  tnf:     { label: "TNF inhibitor",                  keys: ["enbrel"] },
+  il23:    { label: "IL-12/23 inhibitor",             keys: ["stelara"] },
+};
+for (const [ck, c] of Object.entries(CLASSES)) for (const k of c.keys) { DRUGS[k].cls = ck; DRUGS[k].clsName = c.label; }
+
+/* Cost of carrying an unpaid refund, at a stated line-of-credit rate. This is
+   what converts "days late" into a number an owner can act on. */
+const APR = 0.095;
+const carry = (amount, days) => +(amount * (APR / 365) * days).toFixed(2);
 
 /* ---------- helpers ---------- */
 const DAY_MS = 86400000;
@@ -693,6 +775,7 @@ const PROFILE = {
   entresto: { mean: 18, spread: 6, miss: 0.05, short: 0.01, weight: 9 },
   novolog:  { mean: 11, spread: 3, miss: 0.01, short: 0.00, weight: 8 },
   enbrel:   { mean: 29, spread: 9, miss: 0.22, short: 0.06, weight: 3 },
+  stelara:  { mean: 24, spread: 8, miss: 0.14, short: 0.03, weight: 2 },
 };
 
 /* Farxiga's WAC rose Aug 1. AstraZeneca kept refunding on the old basis, so
@@ -763,6 +846,8 @@ function buildLedger() {
       else if (TODAY > c.dueDate) c.status = "overdue";
       else c.status = "pending";
       c.age = c.status === "overdue" ? daysBetween(c.dueDate, TODAY) : 0;
+      c.heldDays = c.paidDate ? c.daysToRefund : daysBetween(c.sentDate, TODAY);
+      c.carryCost = carry(c.expected, c.heldDays);
       claims.push(c);
     }
   }
@@ -848,6 +933,8 @@ const BY_MFR = (() => {
     }
     return {
       ...m, drugs: [...m.drugs], onTimeN, rate, med, evaluable,
+      carryCost: +(m.claims.reduce((a, c) => a + c.carryCost, 0)).toFixed(2),
+      products: [...new Set(m.claims.map(c => c.drug.name))],
       owed: sumExpected(m.claims), outstanding: outstandingAmt,
       unpaid: m.claims.filter(c => !c.paidDate).length,
       shortN: m.claims.filter(c => c.status === "short").length,
@@ -856,6 +943,29 @@ const BY_MFR = (() => {
   });
   return rows.sort((a, b) => b.outstanding - a.outstanding);
 })();
+
+const BY_DRUG = (() => {
+  const map = new Map();
+  for (const c of CLAIMS) {
+    if (!map.has(c.key)) map.set(c.key, { key: c.key, drug: c.drug, claims: [] });
+    map.get(c.key).claims.push(c);
+  }
+  return [...map.values()].map(x => {
+    const settledX = x.claims.filter(c => c.paidDate);
+    const med = median(settledX.map(c => c.daysToRefund));
+    const evalX = x.claims.filter(c => c.paidDate || TODAY > c.dueDate);
+    return {
+      ...x, med,
+      fills: x.claims.length,
+      refund: x.claims[0].expected,
+      onTimePct: evalX.length ? Math.round(evalX.filter(c => c.paidDate && c.daysToRefund <= 14).length / evalX.length * 100) : null,
+      carryPerFill: med === null ? null : carry(x.claims[0].expected, med),
+      tiedUp: +(x.claims.filter(c => !c.paidDate).reduce((a, c) => a + c.expected, 0)).toFixed(2),
+      totalCarry: +(x.claims.reduce((a, c) => a + c.carryCost, 0)).toFixed(2),
+    };
+  });
+})();
+const totalCarry = +(CLAIMS.reduce((a, c) => a + c.carryCost, 0)).toFixed(2);
 
 const basisShorts = shorts.filter(c => c.shortKind === "basis");
 const partialShorts = shorts.filter(c => c.shortKind === "partial");
@@ -1240,9 +1350,9 @@ if (pw) pw.textContent = usd0(sumExpected(CLAIMS) / weeks);
 /* ---------- manufacturer scorecard ---------- */
 
 const VERDICT_TEXT = {
-  ok:      "Within standard",
-  watch:   "Watch",
-  pattern: "Pattern — referable",
+  ok:      "Pays on terms",
+  watch:   "Slow payer",
+  pattern: "Chronic — act",
 };
 document.getElementById("scorebody").innerHTML = BY_MFR.map(m => {
   const pct = m.rate === null ? null : Math.round(m.rate * 100);
@@ -1251,6 +1361,7 @@ document.getElementById("scorebody").innerHTML = BY_MFR.map(m => {
     <td class="mfr"><b>${m.mfr}</b><span>${m.drugs.join(", ")}</span></td>
     <td class="num">${m.claims.length}</td>
     <td class="num">${usd0(m.owed)}</td>
+    <td class="num">${m.products.length}</td>
     <td><div class="ontime-bar">
       <span style="font-variant-numeric:tabular-nums;font-weight:600;min-width:38px">${pct === null ? "—" : pct + "%"}</span>
       <span class="ontime-track"><span class="ontime-fill" style="width:${Math.max(pct || 0, 2)}%;background:${color}"></span></span>
@@ -1267,6 +1378,60 @@ document.getElementById("scorebody").addEventListener("click", e => {
 document.getElementById("scorebody").addEventListener("keydown", e => {
   if (e.key === "Enter" || e.key === " ") { const row = e.target.closest("tr"); if (row) { e.preventDefault(); openMfrDrawer(row.dataset.mfr); } }
 });
+
+
+/* ---------- therapeutic class alternatives ---------- */
+
+document.getElementById("classes").innerHTML = Object.entries(CLASSES).map(([ck, c]) => {
+  const opts = c.keys.map(k => BY_DRUG.find(x => x.key === k)).filter(Boolean)
+                     .sort((a, b) => (a.med ?? 99) - (b.med ?? 99));
+  if (!opts.length) return "";
+  const mfrs = new Set(opts.map(o => o.drug.mfr));
+  const isChoice = !!c.comparable && opts.length > 1 && mfrs.size > 1;
+  const best = opts[0], other = opts[1];
+
+  const rows = opts.map((o, i) => `<tr class="${isChoice && i === 0 ? "best" : ""}">
+      <td class="dname"><b>${o.drug.name.split(" ").slice(0, 2).join(" ")}</b><span>${o.drug.mfr}</span></td>
+      <td>${o.fills}</td>
+      <td>${usd0(o.refund)}</td>
+      <td><b>${o.med ?? "—"}d</b>${isChoice && i === 0 ? ' <span class="badge-fast">FASTER</span>' : ""}</td>
+      <td>${o.onTimePct === null ? "—" : o.onTimePct + "%"}</td>
+      <td>${o.tiedUp ? usd0(o.tiedUp) : "—"}</td>
+    </tr>`).join("");
+
+  let take;
+  if (isChoice) {
+    const gap = (other.med ?? 0) - (best.med ?? 0);
+    take = gap > 0
+      ? `Both are dispensed here. <b>${best.drug.name.split(" ")[0]}</b> money comes back in ${best.med} days;
+         <b>${other.drug.name.split(" ")[0]}</b> takes ${other.med}. Where the prescriber is open to either, the
+         faster manufacturer returns capital <b>${gap} days</b> sooner per fill, and ${other.drug.mfr} is holding
+         <b>${usd0(other.tiedUp)}</b> of yours right now.`
+      : `Both are dispensed here and both manufacturers pay at a similar pace. No cash-flow reason to prefer either.`;
+  } else {
+    const o = opts[0];
+    const mfrRow = BY_MFR.find(x => x.mfr === o.drug.mfr);
+    const slow = mfrRow && mfrRow.verdict !== "ok";
+    take = slow
+      ? `No comparable product on the negotiated list, so substitution is not the lever — stocking depth is.
+         <b>${o.drug.mfr}</b> is holding <b>${usd0(o.tiedUp)}</b> against this product at ${o.med ?? "—"} days a
+         fill. Ordering per prescription instead of holding shelf stock keeps that capital out of the float, at the
+         cost of making the patient wait.`
+      : `No comparable product on the negotiated list, but <b>${o.drug.mfr}</b> pays at ${o.med ?? "—"} days and
+         clears ${mfrRow ? Math.round((mfrRow.rate || 0) * 100) : "—"}% inside the window. Nothing to act on:
+         stock to demand.`;
+  }
+
+  return `<div class="cls ${isChoice ? "choice" : ""}">
+    <div class="cls-h"><b>${c.label}</b>
+      <span class="tag ${isChoice ? "choice" : "locked"}">${isChoice ? "Comparable alternative" : "Single source"}</span></div>
+    <table class="opt">
+      <thead><tr><th>Product</th><th>Fills</th><th>Refund</th><th>Median</th><th>On time</th><th>Tied up</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="cls-take">${take}</div>
+  </div>`;
+}).join("");
 
 /* ---------- exception taxonomy ---------- */
 
@@ -1350,18 +1515,38 @@ function openMfrDrawer(mfrName) {
       <div class="cl"><span class="k">Refunds owed</span><span class="ref">${m.claims.length} fills</span><span class="v">${usd(m.owed)}</span></div>
       <div class="cl"><span class="k">Paid within 14 days</span><span class="ref">${m.onTimeN} of ${m.evaluable.length} resolved</span><span class="v">${pct}%</span></div>
       <div class="cl"><span class="k">Median days to refund</span><span class="ref">standard: 14</span><span class="v">${m.med === null ? "—" : m.med}</span></div>
+      <div class="cl"><span class="k">Carrying cost at ${(APR * 100).toFixed(1)}%</span>
+        <span class="ref">on refunds held</span><span class="v">${usd(m.carryCost)}</span></div>
       <div class="cl variance ${m.outstanding > 0 ? "bad" : "ok"}"><span class="k">Outstanding</span>
         <span class="ref">${m.unpaid} unpaid${m.shortN ? " · " + m.shortN + " short" : ""}</span><span class="v">${usd(m.outstanding)}</span></div>
     </div>
 
+    <div class="sec-h">What you carry from them</div>
+    <table class="carry-list">
+      ${m.products.map(name => {
+        const dr = BY_DRUG.find(x => x.drug.name === name);
+        const cls = CLASSES[dr.drug.cls];
+        const alt = cls.keys.filter(k => k !== dr.key).map(k => DRUGS[k]);
+        return `<tr><td><b>${name}</b><br><span class="sys">${dr.fills} fills &middot; ${usd0(dr.tiedUp)} tied up</span></td>
+          <td class="sys">${alt.length
+            ? "Class alternative: " + alt.map(a => a.name.split(" ")[0] + " (" + a.mfr + ")").join(", ")
+            : "No alternative on the negotiated list — stocking depth is the only lever"}</td></tr>`;
+      }).join("")}
+    </table>
+    ${m.products.length > 1 ? `<p class="note" style="margin:8px 0 0">Exposure to ${m.mfr} is
+      <b>${usd0(m.outstanding)}</b> across ${m.products.length} products, not one. A single slow counterparty
+      concentrates more of this pharmacy&rsquo;s working capital than any one drug suggests.</p>` : ""}
+
     <div class="sec-h">Distribution of days to refund</div>
     <div class="aging aging-base">${rows}</div>
 
-    ${referable ? `<div class="pattern-box">A referable pattern: <b>${100 - pct}%</b> of this manufacturer's
-      refunds missed the statutory window, across <b>${m.evaluable.length}</b> claims that came due. Individually each is a
-      billing question; together they are a compliance matter.</div>` : ""}
+    ${referable ? `<div class="pattern-box"><b>${100 - pct}%</b> of this manufacturer's refunds missed the
+      statutory window, across <b>${m.evaluable.length}</b> claims that came due. Three levers, in the order a
+      pharmacy can actually pull them: reduce stocking depth on their products, prefer a class alternative where
+      the clinical choice is already open, and file the pattern — the first two work this week, the third works
+      only if enough pharmacies file the same evidence.</div>` : ""}
 
-    <div class="sec-h">${referable ? "CMS referral (generated from this pack)" : "Summary letter (generated from this pack)"}</div>
+    <div class="sec-h">${referable ? "Pattern filing, if you want it (generated from this pack)" : "Summary letter (generated from this pack)"}</div>
     <div class="letter" id="letter">${mfrLetter(m)}</div>
     <div class="letterbar">
       <button id="copyletter">Copy letter text</button>

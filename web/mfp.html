@@ -367,6 +367,87 @@
   footer.fine {
     margin-top: 28px; font-size: 12px; color: var(--muted); max-width: 88ch; line-height: 1.6;
   }
+
+  /* ---- manufacturer scorecard ---- */
+  .score-wrap { overflow-x: auto; }
+  table.score { border-collapse: collapse; width: 100%; min-width: 720px; }
+  table.score thead th {
+    text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .07em;
+    color: var(--muted); font-weight: 600; padding: 8px 12px 8px 0;
+    border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  table.score tbody td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  table.score tbody tr:last-child td { border-bottom: none; }
+  table.score tbody tr.clickable { cursor: pointer; }
+  table.score tbody tr.clickable:hover td { background: var(--surface-2); }
+  table.score .mfr b { font-weight: 600; }
+  table.score .mfr span { display: block; font-size: 11.5px; color: var(--muted); }
+  .verdict {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase; border-radius: 999px; padding: 3px 10px; white-space: nowrap;
+  }
+  .verdict.ok      { color: var(--paid-text); background: var(--paid-bg); }
+  .verdict.watch   { color: var(--short);     background: var(--short-bg); }
+  .verdict.pattern { color: var(--overdue);   background: var(--overdue-bg); }
+  .ontime-bar { display: flex; align-items: center; gap: 8px; }
+  .ontime-track { flex: 1; min-width: 60px; height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+  .ontime-fill { height: 100%; border-radius: 3px; }
+  .days-cell b { font-variant-numeric: tabular-nums; }
+  .days-cell span { color: var(--muted); font-size: 11.5px; }
+
+  /* ---- exception taxonomy ---- */
+  .exc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .exc {
+    border: 1px solid var(--line); border-left: 3px solid var(--muted); border-radius: 6px;
+    background: var(--surface); padding: 11px 13px;
+  }
+  .exc.hi { border-left-color: var(--overdue); }
+  .exc.mid { border-left-color: var(--short); }
+  .exc.lo { border-left-color: var(--pending); }
+  .exc .n { font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .exc .t { font-size: 12.5px; font-weight: 600; margin-top: 1px; }
+  .exc .d { font-size: 11.5px; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+
+  /* ---- float chart ---- */
+  #floatchart { width: 100%; height: auto; display: block; }
+
+  /* ---- projection ---- */
+  .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 4px; }
+  .proj { border: 1px solid var(--line); border-radius: 8px; padding: 13px 15px; background: var(--surface); }
+  .proj.now { border-color: var(--baseline); }
+  .proj.next { border-color: var(--accent); background: var(--accent-soft); }
+  .proj .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; }
+  .proj .big { font-size: 23px; font-weight: 700; margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .proj .sub { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+
+  /* ---- escalation ladder ---- */
+  .ladder { list-style: none; margin: 0; padding: 0; }
+  .ladder li {
+    display: flex; gap: 10px; align-items: flex-start; font-size: 13px;
+    padding: 7px 0; border-bottom: 1px dashed var(--line);
+  }
+  .ladder li:last-child { border-bottom: none; }
+  .ladder .step {
+    flex: none; width: 20px; height: 20px; border-radius: 50%; font-size: 11px; font-weight: 700;
+    display: grid; place-items: center; background: var(--surface-2); color: var(--muted);
+    border: 1px solid var(--line);
+  }
+  .ladder li.done .step { background: var(--paid-bg); color: var(--paid-text); border-color: var(--paid-text); }
+  .ladder li.now .step  { background: var(--overdue); color: #fff; border-color: var(--overdue); }
+  .ladder li.now { font-weight: 600; }
+  .ladder .when { margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+
+  .pattern-box {
+    border: 1px solid var(--overdue); background: var(--overdue-bg); border-radius: 8px;
+    padding: 11px 14px; margin: 14px 0; font-size: 13px;
+  }
+  .pattern-box b { font-family: var(--mono); }
+
+  @media (max-width: 900px) {
+    .exc-grid { grid-template-columns: 1fr 1fr; }
+    .proj-grid { grid-template-columns: 1fr; }
+  }
+
   [hidden] { display: none !important; }
 
   @media (max-width: 900px) {
@@ -398,13 +479,57 @@
     Since Jan 1, 2026, this pharmacy buys the ten Medicare-negotiated drugs at roughly list price
     (<b>WAC</b>) but is reimbursed against the lower <b>Maximum Fair Price</b>. The manufacturer owes
     the gap on every fill as a refund routed through CMS&rsquo;s Medicare Transaction Facilitator —
-    due within <b>14 calendar days</b> of claim-data transmission. RxGuard reconciles each fill:
-    what&rsquo;s owed, what arrived, what&rsquo;s overdue — with a dispute-ready evidence pack.
+    due within <b>14 calendar days</b> of claim-data transmission. RxGuard reconciles every fill against the
+    bank feed, tracks the working capital that is tied up while refunds are outstanding, separates the exceptions
+    that need different responses, and scores each manufacturer against the statutory window — because a single
+    late refund is a billing question, while a manufacturer that misses it habitually is a compliance matter.
+    Every claim carries a dispute-ready evidence pack; every manufacturer with a pattern carries a referral pack.
   </div>
 
   <div class="kpis" id="kpis"></div>
 
-  <div class="row2">
+  <section class="panel">
+    <h2>Working capital tied up in unpaid refunds</h2>
+    <p class="note">Daily balance the pharmacy is fronting: every fill adds its refund to the float on the day
+      its claim data is transmitted, and removes it on the day the deposit clears. Short payments never clear.</p>
+    <div class="chart-legend">
+      <span><span class="sw" style="background:var(--overdue)"></span>Past the 14-day standard</span>
+      <span><span class="sw" style="background:var(--pending)"></span>Inside the window</span>
+      <span><span class="dash"></span>Average floated</span>
+    </div>
+    <svg id="floatchart" viewBox="0 0 1100 260" role="img" aria-label="Daily outstanding refund balance over eleven weeks, split into amounts inside the 14-day window and past it"></svg>
+  </section>
+
+  <section class="panel" style="margin-top:12px">
+    <h2>Manufacturer compliance</h2>
+    <p class="note">One late refund is a billing question. A manufacturer that misses the statutory window on most
+      of its claims is a pattern — and a pattern is what a regulator acts on. Click a row for its evidence pack.</p>
+    <div class="score-wrap">
+      <table class="score">
+        <thead>
+          <tr>
+            <th>Manufacturer</th>
+            <th class="num">Claims</th>
+            <th class="num">Refunds owed</th>
+            <th>Paid within 14 days</th>
+            <th class="num">Days to refund</th>
+            <th class="num">Outstanding</th>
+            <th>Assessment</th>
+          </tr>
+        </thead>
+        <tbody id="scorebody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:12px">
+    <h2>Exceptions the ledger separates</h2>
+    <p class="note">&ldquo;Unpaid&rdquo; is not one thing. Each of these needs a different response, and two of them
+      are invisible in a reconciliation report that only matches totals.</p>
+    <div class="exc-grid" id="exceptions"></div>
+  </section>
+
+  <div class="row2" style="margin-top:12px">
     <section class="panel">
       <h2>Outstanding refunds by age</h2>
       <p class="note">Age is measured from the refund due date (transmission&nbsp;+&nbsp;14 calendar days).</p>
@@ -446,6 +571,15 @@
     </div>
   </section>
 
+  <section class="panel" style="margin-top:12px">
+    <h2>What this becomes in 2027</h2>
+    <p class="note">Ten negotiated drugs are in effect today. Fifteen more take effect Jan&nbsp;1,&nbsp;2027, and the
+      340B rebate pilot routes a second manufacturer-refund stream through the same facilitator.</p>
+    <div class="proj-grid" id="projection"></div>
+    <p class="note" style="margin:12px 0 0">The 2027 figures scale this pharmacy&rsquo;s observed refund-per-fill and
+      payment behavior across the announced drug list. They are an extrapolation, not a forecast.</p>
+  </section>
+
   <section class="panel prov">
     <h2>Data provenance</h2>
     <p class="note">Exactly where this demo touches reality — and where it doesn't.</p>
@@ -457,7 +591,9 @@
           <li>The 14-calendar-day refund standard (42&nbsp;U.S.C. §1320f-2 and CMS program guidance).</li>
           <li>All eight drugs shown, matched to their actual manufacturers, are among the ten selected drugs.</li>
           <li>The MFP column holds CMS&rsquo;s published 2026 negotiated prices for a 30-day supply ($231 Eliquis &hellip; $2,355 Enbrel).</li>
-          <li>The cash-flow pain is documented: NCPA estimates roughly $11K/week floated per pharmacy, with real-world payment averaging ~21 days against the 14-day standard — this ledger&rsquo;s median of 20 days was tuned to that.</li>
+          <li>The cash-flow pain is documented: NCPA estimates roughly $11K/week floated per pharmacy, with real-world payment averaging ~21 days against the 14-day standard — this ledger averages <span id="provMedian">&mdash;</span> days to refund, in that range, and floats
+          <span id="provWeekly">&mdash;</span> per week &mdash; somewhat above NCPA&rsquo;s per-pharmacy average,
+          since the modeled panel is deliberately Medicare-heavy.</li>
         </ul>
       </div>
       <div>
@@ -475,6 +611,9 @@
         <ul>
           <li>The pharmacy, its address and NCPDP number; every Rx number, invoice line, MTF reference, ACH trace, adjudication ID, fill date, deposit, and short-payment — all generated deterministically from a fixed seed.</li>
           <li>The letter&rsquo;s addressee (&ldquo;Medicare MFP Effectuation Team&rdquo;) is an invented label, and the letter paraphrases the refund requirement rather than citing it.</li>
+          <li><b>Every manufacturer&rsquo;s payment behavior is invented.</b> The compliance scorecard is the honest
+            output of a made-up input: each company was assigned a payment profile, and the ledger reports what those
+            profiles produce. Nothing here describes how any real manufacturer actually pays.</li>
         </ul>
       </div>
     </div>
@@ -519,115 +658,225 @@ const DRUGS = {
   enbrel:   { name: "Enbrel 50 mg SureClick",    generic: "etanercept",            ndc: "58406-0435-04", pkg: "4 auto-injectors",  wac: 7105.00, mfp: 2355.00, mfr: "Amgen" },
 };
 
-/* [drug, fillDate, outcome, arg]
-   outcome: P = paid in full after <arg> days from transmission
-            S = short-paid: paid <arg> dollars, after args[1] days
-            O = overdue (unpaid, past due date)
-            N = pending (unpaid, still inside 14-day window)          */
-const FILLS = [
-  ["eliquis","2026-06-22","P",16], ["jardiance","2026-06-23","P",21], ["novolog","2026-06-24","P",13],
-  ["xarelto","2026-06-25","P",24], ["eliquis","2026-06-26","P",19],
-  ["januvia","2026-06-29","P",27], ["farxiga","2026-06-30","P",18], ["eliquis","2026-07-01","P",22],
-  ["entresto","2026-07-02","P",20],
-  ["eliquis","2026-07-06","P",17], ["jardiance","2026-07-07","P",25], ["novolog","2026-07-08","P",14],
-  ["xarelto","2026-07-09","P",21], ["farxiga","2026-07-10","P",23],
-  ["eliquis","2026-07-13","P",19], ["januvia","2026-07-14","O",0],  ["jardiance","2026-07-15","P",26],
-  ["entresto","2026-07-16","P",18], ["novolog","2026-07-17","P",20],
-  ["eliquis","2026-07-20","P",22], ["xarelto","2026-07-21","O",0],  ["farxiga","2026-07-22","P",19],
-  ["enbrel","2026-07-23","S",[4137.50,23]], ["jardiance","2026-07-24","P",21],
-  ["eliquis","2026-07-27","P",24], ["januvia","2026-07-28","P",17], ["novolog","2026-07-29","O",0],
-  ["entresto","2026-07-30","P",25],
-  ["enbrel","2026-08-03","O",0],  ["eliquis","2026-08-04","P",20], ["jardiance","2026-08-05","O",0],
-  ["xarelto","2026-08-06","P",18], ["farxiga","2026-08-07","P",22],
-  ["eliquis","2026-08-10","P",16], ["januvia","2026-08-11","P",21], ["novolog","2026-08-12","P",19],
-  ["entresto","2026-08-13","O",0], ["jardiance","2026-08-14","P",17],
-  ["eliquis","2026-08-17","N",0],  ["xarelto","2026-08-18","P",15], ["farxiga","2026-08-19","S",[301.00,20]],
-  ["eliquis","2026-08-24","N",0],  ["januvia","2026-08-25","N",0],  ["jardiance","2026-08-26","N",0],
-  ["novolog","2026-08-27","N",0],
-  ["eliquis","2026-08-31","N",0],  ["entresto","2026-09-01","N",0],
-];
-
-const TODAY = new Date("2026-09-02T12:00:00");
-const DAY = 86400000;
+/* ---------- helpers ---------- */
+const DAY_MS = 86400000;
 const d = s => new Date(s + "T12:00:00");
-const addDays = (dt, n) => new Date(dt.getTime() + n * DAY);
+const addDays = (dt, n) => new Date(dt.getTime() + n * DAY_MS);
 const fmtD = dt => dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 const fmtDY = dt => dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 const iso = dt => dt.toISOString().slice(0, 10);
 const usd = n => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
-const daysBetween = (a, b) => Math.round((b - a) / DAY);
-
-// deterministic pseudo-ids from the fill date + drug (stable across loads)
+const usd0 = n => n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+const daysBetween = (a, b) => Math.round((b - a) / DAY_MS);
+const median = xs => { if (!xs.length) return null; const v = xs.slice().sort((a, b) => a - b); return v[Math.floor(v.length / 2)]; };
 function hash(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 
-const CLAIMS = FILLS.map(([key, fill, outcome, arg], i) => {
-  const drug = DRUGS[key];
-  const fillDate = d(fill);
-  const h = hash(key + fill);
-  const sentDate = addDays(fillDate, 2 + (h % 3));            // MTF data transmitted 2-4 days after fill
-  const dueDate  = addDays(sentDate, 14);                     // CMS 14-calendar-day standard
-  const expected = +(drug.wac - drug.mfp).toFixed(2);
-  const rxNo = String(701000 + ((h % 89000) + i * 37) % 89000).padStart(6, "0");
-  const c = {
-    id: "C" + String(i + 1).padStart(3, "0"),
-    ep: "EP-2026-" + String(101 + i).padStart(4, "0"),
-    key, drug, rxNo, fillDate, sentDate, dueDate, expected,
-    mtfRef: "MTF-26-" + String(200000 + (h % 700000)).padStart(6, "0"),
-    invRef: "INV-" + String(280000 + (h % 19000)) + "/L" + (1 + (h % 22)),
-    adjRef: "D0-" + String(1000000 + (h % 8999999)),
-    received: 0, paidDate: null, ach: null, status: "pending",
-  };
-  if (outcome === "P") {
-    c.received = expected;
-    c.paidDate = addDays(sentDate, arg);
-    c.ach = "ACH " + String(910000000 + (h % 89999999));
-    c.status = "paid";
-    c.daysToRefund = arg;
-  } else if (outcome === "S") {
-    c.received = arg[0];
-    c.paidDate = addDays(sentDate, arg[1]);
-    c.ach = "ACH " + String(910000000 + (h % 89999999));
-    c.status = "short";
-    c.daysToRefund = arg[1];
-  } else if (outcome === "O") {
-    c.status = "overdue";
-  } else {
-    c.status = TODAY > dueDate ? "overdue" : "pending";
+/* ---------- deterministic synthetic generator ----------------------------
+   Every figure below is produced from this block: one seed, one pass, no
+   hand-entered totals. Each manufacturer is given a payment profile, and the
+   ledger's statuses fall out of those profiles rather than being asserted. */
+
+const SEED = 20260902;
+function rng(seed) {
+  let x = seed >>> 0;
+  return () => { x ^= x << 13; x >>>= 0; x ^= x >>> 17; x ^= x << 5; x >>>= 0; return x / 4294967296; };
+}
+
+/* mean/spread = days from MTF transmission to deposit; miss = share never paid;
+   short = share underpaid; weight = share of this pharmacy's negotiated-drug fills */
+const PROFILE = {
+  eliquis:  { mean: 13, spread: 4, miss: 0.02, short: 0.00, weight: 26 },
+  jardiance:{ mean: 20, spread: 6, miss: 0.06, short: 0.02, weight: 18 },
+  xarelto:  { mean: 16, spread: 5, miss: 0.05, short: 0.00, weight: 13 },
+  januvia:  { mean: 12, spread: 3, miss: 0.01, short: 0.00, weight: 11 },
+  farxiga:  { mean: 14, spread: 4, miss: 0.02, short: 0.00, weight: 12 },
+  entresto: { mean: 18, spread: 6, miss: 0.05, short: 0.01, weight: 9 },
+  novolog:  { mean: 11, spread: 3, miss: 0.01, short: 0.00, weight: 8 },
+  enbrel:   { mean: 29, spread: 9, miss: 0.22, short: 0.06, weight: 3 },
+};
+
+/* Farxiga's WAC rose Aug 1. AstraZeneca kept refunding on the old basis, so
+   every affected claim is short by EXACTLY the WAC delta — the signature of a
+   price-basis error rather than a rounding difference. */
+const BASIS = { key: "farxiga", from: d("2026-08-01"), oldWac: 556.00, delta: +(590.00 - 556.00).toFixed(2) };
+
+const TODAY = new Date("2026-09-02T12:00:00");
+const DAY = 86400000;
+
+function buildLedger() {
+  const r = rng(SEED);
+  const keys = [];
+  for (const [k, p] of Object.entries(PROFILE)) for (let i = 0; i < p.weight; i++) keys.push(k);
+
+  const claims = [];
+  let n = 0;
+  for (let day = d("2026-06-22"); day <= d("2026-09-01"); day = addDays(day, 1)) {
+    const dow = day.getDay();
+    if (dow === 0) continue;                                  // closed Sundays
+    const perDay = dow === 6 ? 1 + Math.floor(r() * 3) : 3 + Math.floor(r() * 4);
+    for (let i = 0; i < perDay; i++) {
+      const key = keys[Math.floor(r() * keys.length)];
+      const drug = DRUGS[key], prof = PROFILE[key];
+      const h = hash(key + iso(day) + n);
+      const sentDate = addDays(day, 2 + (h % 3));
+      const dueDate = addDays(sentDate, 14);
+      const expected = +(drug.wac - drug.mfp).toFixed(2);
+
+      // days to deposit: triangular around the profile mean, never < 4
+      const draw = (r() + r()) / 2;
+      let days = Math.max(4, Math.round(prof.mean + prof.spread * (draw * 2 - 1) * 1.8));
+      const missed = r() < prof.miss;
+
+      const c = {
+        id: "C" + String(++n).padStart(3, "0"),
+        ep: "EP-2026-" + String(1000 + n),
+        key, drug, fillDate: day, sentDate, dueDate, expected,
+        rxNo: String(701000 + ((h % 89000) + n * 37) % 89000).padStart(6, "0"),
+        mtfRef: "MTF-26-" + String(200000 + (h % 700000)).padStart(6, "0"),
+        invRef: "INV-" + String(280000 + (h % 19000)) + "/L" + (1 + (h % 22)),
+        adjRef: "D0-" + String(1000000 + (h % 8999999)),
+        received: 0, paidDate: null, ach: null, daysToRefund: null, shortKind: null,
+      };
+
+      const basisHit = key === BASIS.key && day >= BASIS.from;
+      const paidDate = missed ? null : addDays(sentDate, days);
+
+      if (paidDate && paidDate <= TODAY) {
+        c.paidDate = paidDate;
+        c.daysToRefund = days;
+        c.ach = "ACH " + String(910000000 + (h % 89999999));
+        if (basisHit) {
+          c.received = +(expected - BASIS.delta).toFixed(2);
+          c.shortKind = "basis";
+        } else if (r() < prof.short) {
+          c.received = +(expected * (0.55 + r() * 0.3)).toFixed(2);
+          c.shortKind = "partial";
+        } else {
+          c.received = expected;
+        }
+      }
+
+      c.variance = +(expected - c.received).toFixed(2);
+      if (c.paidDate && c.variance > 0.005) c.status = "short";
+      else if (c.paidDate && c.daysToRefund > 14) c.status = "late";
+      else if (c.paidDate) c.status = "paid";
+      else if (TODAY > c.dueDate) c.status = "overdue";
+      else c.status = "pending";
+      c.age = c.status === "overdue" ? daysBetween(c.dueDate, TODAY) : 0;
+      claims.push(c);
+    }
   }
-  c.variance = +(expected - c.received).toFixed(2);
-  c.age = c.status === "overdue" ? daysBetween(c.dueDate, TODAY) : 0;
-  return c;
-});
+  return claims;
+}
+
+const CLAIMS = buildLedger();
+
+/* Deposits that arrived referencing a transmission this pharmacy has no open
+   claim for — real money in the account that cannot be applied. A report that
+   only matches totals shows these as a surplus and moves on. */
+const ORPHANS = [
+  { ach: "ACH 918204773", date: d("2026-08-06"), amount: 363.00, ref: "MTF-26-418902", note: "references a transmission not in this pharmacy's ledger" },
+  { ach: "ACH 913660418", date: d("2026-08-21"), amount: 414.00, ref: "MTF-26-233741", note: "references a transmission not in this pharmacy's ledger" },
+  { ach: "ACH 916991205", date: d("2026-08-28"), amount: 4750.00, ref: "MTF-26-596014", note: "duplicate of a refund already applied — repayable to the manufacturer" },
+];
 
 /* ---------- derived aggregates (single source of truth: CLAIMS) ---------- */
 
 const open = CLAIMS.filter(c => c.status === "pending" || c.status === "overdue");
 const overdue = CLAIMS.filter(c => c.status === "overdue");
 const shorts = CLAIMS.filter(c => c.status === "short");
-const paid = CLAIMS.filter(c => c.status === "paid" || c.status === "short");
+const settled = CLAIMS.filter(c => c.paidDate);              // paid, late, or short
+const lates = CLAIMS.filter(c => c.status === "late");
 const sum = arr => +(arr.reduce((a, c) => a + c.variance, 0)).toFixed(2);
-const outstanding = sum(open) + sum(shorts);
+const sumExpected = arr => +(arr.reduce((a, c) => a + c.expected, 0)).toFixed(2);
+
+const outstanding = +(sum(open) + sum(shorts)).toFixed(2);
 const overdueAmt = sum(overdue);
-const days = paid.map(c => c.daysToRefund).sort((a, b) => a - b);
-const medianDays = days.length ? days[Math.floor(days.length / 2)] : 0;
 const shortVar = sum(shorts);
+const medianDays = median(settled.map(c => c.daysToRefund)) || 0;
+const meanDays = Math.round(settled.reduce((a, c) => a + c.daysToRefund, 0) / settled.length);
+const onTime = settled.filter(c => c.daysToRefund <= 14).length;
+const weeks = daysBetween(d("2026-06-22"), TODAY) / 7;
+const weeklyFloat = +(sumExpected(CLAIMS) / weeks).toFixed(2);
+
+/* daily outstanding balance: a claim floats from transmission until its
+   deposit clears; an unresolved short payment never clears. */
+const FLOAT = (() => {
+  const series = [];
+  for (let day = d("2026-06-22"); day <= TODAY; day = addDays(day, 1)) {
+    let inWindow = 0, past = 0;
+    for (const c of CLAIMS) {
+      if (c.sentDate > day) continue;
+      let amt = 0;
+      if (!c.paidDate || c.paidDate > day) amt = c.expected;
+      else if (c.variance > 0.005) amt = c.variance;
+      if (!amt) continue;
+      if (day > c.dueDate) past += amt; else inWindow += amt;
+    }
+    series.push({ day, inWindow: +inWindow.toFixed(2), past: +past.toFixed(2), total: +(inWindow + past).toFixed(2) });
+  }
+  return series;
+})();
+const peakFloat = Math.max(...FLOAT.map(f => f.total));
+const floatNow = FLOAT[FLOAT.length - 1].total;
+
+/* per-manufacturer roll-up — the pattern view */
+const BY_MFR = (() => {
+  const map = new Map();
+  for (const c of CLAIMS) {
+    const k = c.drug.mfr;
+    if (!map.has(k)) map.set(k, { mfr: k, drugs: new Set(), claims: [], settled: [] });
+    const m = map.get(k);
+    m.drugs.add(c.drug.name.split(" ")[0]);
+    m.claims.push(c);
+    if (c.paidDate) m.settled.push(c);
+  }
+  const rows = [...map.values()].map(m => {
+    /* Compliance is measured over claims that have HAD their chance — settled,
+       or past the due date. Counting only settled claims would reward the
+       manufacturer that simply never pays. Claims still inside the window are
+       not yet failures and are excluded. */
+    const evaluable = m.claims.filter(c => c.paidDate || TODAY > c.dueDate);
+    const onTimeN = evaluable.filter(c => c.paidDate && c.daysToRefund <= 14).length;
+    const rate = evaluable.length ? onTimeN / evaluable.length : null;
+    const outstandingAmt = +(sum(m.claims.filter(c => !c.paidDate)) + sum(m.claims.filter(c => c.status === "short"))).toFixed(2);
+    const med = median(m.settled.map(c => c.daysToRefund));
+    let verdict = "ok";
+    if (rate !== null && evaluable.length >= 8) {
+      if (rate < 0.35) verdict = "pattern";
+      else if (rate < 0.70) verdict = "watch";
+    }
+    return {
+      ...m, drugs: [...m.drugs], onTimeN, rate, med, evaluable,
+      owed: sumExpected(m.claims), outstanding: outstandingAmt,
+      unpaid: m.claims.filter(c => !c.paidDate).length,
+      shortN: m.claims.filter(c => c.status === "short").length,
+      verdict,
+    };
+  });
+  return rows.sort((a, b) => b.outstanding - a.outstanding);
+})();
+
+const basisShorts = shorts.filter(c => c.shortKind === "basis");
+const partialShorts = shorts.filter(c => c.shortKind === "partial");
+const orphanTotal = +(ORPHANS.reduce((a, o) => a + o.amount, 0)).toFixed(2);
 
 /* ---------- KPI tiles ---------- */
 
 const kpiEl = document.getElementById("kpis");
 kpiEl.innerHTML = `
-  <div class="kpi"><div class="lbl">Refunds outstanding</div>
-    <div class="val">${usd(outstanding)}</div>
+  <div class="kpi"><div class="lbl">Floated right now</div>
+    <div class="val">${usd(floatNow)}</div>
     <div class="sub">${open.length + shorts.length} claims awaiting full payment</div></div>
   <div class="kpi"><div class="lbl">Past the 14-day standard</div>
     <div class="val bad">${usd(overdueAmt)}</div>
-    <div class="sub">${overdue.length} claims overdue &middot; oldest ${Math.max(...overdue.map(c=>c.age))} days</div></div>
+    <div class="sub">${overdue.length} claims overdue &middot; oldest ${Math.max(...overdue.map(c => c.age))} days</div></div>
   <div class="kpi"><div class="lbl">Median days to refund</div>
     <div class="val warn">${medianDays} days</div>
-    <div class="sub">CMS standard: 14 calendar days</div></div>
-  <div class="kpi"><div class="lbl">Short-paid variance</div>
-    <div class="val warn">${usd(shortVar)}</div>
-    <div class="sub">${shorts.length} deposits below expected refund</div></div>`;
+    <div class="sub">${Math.round(onTime / settled.length * 100)}% of ${settled.length} deposits met the 14-day standard</div></div>
+  <div class="kpi"><div class="lbl">Systematic short-pay</div>
+    <div class="val warn">${basisShorts.length} claims</div>
+    <div class="sub">each short by exactly ${usd(BASIS.delta)} &mdash; refunds computed on the pre-Aug&nbsp;1 WAC</div></div>`;
 
 /* ---------- aging bars ---------- */
 
@@ -719,12 +968,14 @@ document.getElementById("spotbtn").addEventListener("click", () => openDrawer(he
 
 const STATUS_META = {
   pending: { label: "Pending", cls: "pending" },
-  paid:    { label: "Paid",    cls: "paid" },
+  paid:    { label: "Paid on time", cls: "paid" },
+  late:    { label: "Paid late", cls: "short" },
   short:   { label: "Short-paid", cls: "short" },
   overdue: { label: "Overdue", cls: "overdue" },
 };
 const FILTERS = [
-  ["all", "All"], ["overdue", "Overdue"], ["short", "Short-paid"], ["pending", "Pending"], ["paid", "Paid"],
+  ["all", "All"], ["overdue", "Overdue"], ["short", "Short-paid"], ["late", "Paid late"],
+  ["pending", "Pending"], ["paid", "Paid on time"],
 ];
 let filter = "all";
 const chipsEl = document.getElementById("chips");
@@ -769,6 +1020,48 @@ tbody.addEventListener("keydown", e => {
 
 const drawer = document.getElementById("drawer");
 const scrim = document.getElementById("scrim");
+
+
+/* business-day arithmetic for the escalation clock */
+function addBusinessDays(dt, n) {
+  let out = dt, left = n;
+  while (left > 0) { out = addDays(out, 1); const w = out.getDay(); if (w !== 0 && w !== 6) left--; }
+  return out;
+}
+
+function ladderHtml(c) {
+  if (c.status !== "overdue" && c.status !== "short") return "";
+  const demand = c.status === "overdue" ? c.dueDate : c.paidDate;
+  const remit = addBusinessDays(demand, 5);
+  const steps = [
+    ["done", "Refund fell due", c.dueDate],
+    [TODAY >= demand ? "now" : "", c.status === "short" ? "Balance demand ready to send" : "Demand letter ready to send", demand],
+    [TODAY >= remit ? "now" : "", "Five business days to remit", remit],
+    [TODAY > remit ? "now" : "", "Eligible for CMS referral with the pattern pack", addBusinessDays(demand, 6)],
+  ];
+  let seenNow = false;
+  return `<div class="sec-h">Escalation posture</div><ul class="ladder">` + steps.map(([cls, label, when], i) => {
+    let use = cls;
+    if (use === "now") { if (seenNow) use = "done"; }
+    return { use, label, when, i };
+  }).reverse().map(o => {              // mark only the latest reached step as "now"
+    if (o.use === "now" && !seenNow) { seenNow = true; return { ...o, use: "now" }; }
+    if (o.use === "now") return { ...o, use: "done" };
+    return o;
+  }).reverse().map(o =>
+    `<li class="${o.use}"><span class="step">${o.i + 1}</span><span>${o.label}</span><span class="when">${fmtDY(o.when)}</span></li>`
+  ).join("") + `</ul>`;
+}
+
+function patternHtml(c) {
+  const m = BY_MFR.find(x => x.mfr === c.drug.mfr);
+  if (!m || m.verdict === "ok" || m.evaluable.length < 8) return "";
+  const pct = Math.round((1 - (m.rate || 0)) * 100);
+  return `<div class="pattern-box">This is not an isolated claim. <b>${m.mfr}</b> missed the 14-day standard on
+    <b>${pct}%</b> of the ${m.evaluable.length} refunds that came due here, with <b>${usd(m.outstanding)}</b> outstanding across
+    ${m.claims.length} fills. <a href="#" data-openmfr="${m.mfr}">Open the pattern evidence pack</a> — a referral carries
+    weight that a single letter does not.</div>`;
+}
 
 function letterFor(c) {
   const kind = c.status === "short" ? "Short-paid" : "Overdue";
@@ -846,6 +1139,9 @@ function openDrawer(id) {
       ${timeline.map(([cls, txt, dt]) => `<li class="${cls}">${txt}<span class="d">${fmtDY(dt)}</span></li>`).join("")}
     </ul>
 
+    ${ladderHtml(c)}
+    ${patternHtml(c)}
+
     <div class="sec-h">Source evidence</div>
     <table class="evtable">
       ${evidence.map(([r, s, id]) => `<tr><td>${r}</td><td class="sys">${s}</td><td class="id">${id}</td></tr>`).join("")}
@@ -866,6 +1162,8 @@ function openDrawer(id) {
   drawer.hidden = false; scrim.hidden = false;
   drawer.querySelector(".close").focus();
   drawer.querySelector(".close").addEventListener("click", closeDrawer);
+  const link = drawer.querySelector("[data-openmfr]");
+  if (link) link.addEventListener("click", ev => { ev.preventDefault(); openMfrDrawer(link.dataset.openmfr); });
   const cp = drawer.querySelector("#copyletter");
   if (cp) cp.addEventListener("click", async () => {
     const txt = drawer.querySelector("#letter").textContent;
@@ -879,6 +1177,218 @@ function openDrawer(id) {
 function closeDrawer() { drawer.hidden = true; scrim.hidden = true; }
 scrim.addEventListener("click", closeDrawer);
 addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+
+const pm = document.getElementById("provMedian");
+if (pm) pm.textContent = meanDays;
+const pw = document.getElementById("provWeekly");
+if (pw) pw.textContent = usd0(sumExpected(CLAIMS) / weeks);
+
+/* ---------- float chart ---------- */
+
+(function floatChart() {
+  const W = 1100, H = 260, L = 66, R = 16, T = 14, B = 30;
+  const max = Math.ceil(peakFloat / 10000) * 10000 || 10000;
+  const x = i => L + (W - L - R) * i / (FLOAT.length - 1);
+  const y = v => T + (H - T - B) * (1 - v / max);
+  const avg = FLOAT.reduce((a, f) => a + f.total, 0) / FLOAT.length;
+
+  let g = "";
+  for (let v = 0; v <= max; v += max / 4) {
+    g += `<line x1="${L}" x2="${W - R}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" stroke="var(--line)" stroke-width="1"/>
+          <text x="${L - 9}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" font-size="10.5" fill="var(--muted)" font-family="var(--mono)">${v === 0 ? "0" : "$" + Math.round(v / 1000) + "k"}</text>`;
+  }
+  const areaPath = (pick, base) => {
+    const top = FLOAT.map((f, i) => `${x(i).toFixed(1)},${y(pick(f)).toFixed(1)}`).join(" L ");
+    const bottom = FLOAT.map((f, i) => `${x(i).toFixed(1)},${y(base(f)).toFixed(1)}`).reverse().join(" L ");
+    return `M ${top} L ${bottom} Z`;
+  };
+  const inWin = areaPath(f => f.inWindow, () => 0);
+  const pastArea = areaPath(f => f.total, f => f.inWindow);
+
+  let ticks = "";
+  FLOAT.forEach((f, i) => {
+    if (f.day.getDate() === 1 || i === 0) {
+      ticks += `<text x="${x(i).toFixed(1)}" y="${H - 9}" text-anchor="middle" font-size="10.5" fill="var(--muted)">${fmtD(f.day)}</text>`;
+    }
+  });
+
+  const svg = document.getElementById("floatchart");
+  svg.innerHTML = g
+    + `<path d="${inWin}" fill="var(--pending)" opacity=".75"/>`
+    + `<path d="${pastArea}" fill="var(--overdue)" opacity=".8"/>`
+    + `<polyline points="${FLOAT.map((f, i) => `${x(i).toFixed(1)},${y(f.total).toFixed(1)}`).join(" ")}" fill="none" stroke="var(--ink)" stroke-width="1.4"/>`
+    + `<line x1="${L}" x2="${W - R}" y1="${y(avg).toFixed(1)}" y2="${y(avg).toFixed(1)}" stroke="var(--ink-2)" stroke-width="1.6" stroke-dasharray="6 4"/>`
+    + `<text x="${W - R - 4}" y="${(y(avg) - 7).toFixed(1)}" text-anchor="end" font-size="11" font-family="var(--mono)" fill="var(--ink-2)">avg ${usd0(avg)}</text>`
+    + `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--baseline)" stroke-width="1.5"/>` + ticks
+    + `<rect id="floathit" x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent"/>`;
+
+  const tip = document.getElementById("tip");
+  svg.addEventListener("mousemove", e => {
+    const box = svg.getBoundingClientRect();
+    const px = (e.clientX - box.left) / box.width * W;
+    if (px < L || px > W - R) { tip.style.display = "none"; return; }
+    const i = Math.round((px - L) / (W - L - R) * (FLOAT.length - 1));
+    const f = FLOAT[Math.max(0, Math.min(FLOAT.length - 1, i))];
+    tip.innerHTML = `${fmtDY(f.day)}<br>Floated <b>${usd(f.total)}</b><br>Past the standard <b>${usd(f.past)}</b>`;
+    tip.style.display = "block";
+    tip.style.left = Math.min(e.clientX + 14, innerWidth - 250) + "px";
+    tip.style.top = (e.clientY + 14) + "px";
+  });
+  svg.addEventListener("mouseleave", () => tip.style.display = "none");
+})();
+
+/* ---------- manufacturer scorecard ---------- */
+
+const VERDICT_TEXT = {
+  ok:      "Within standard",
+  watch:   "Watch",
+  pattern: "Pattern — referable",
+};
+document.getElementById("scorebody").innerHTML = BY_MFR.map(m => {
+  const pct = m.rate === null ? null : Math.round(m.rate * 100);
+  const color = m.verdict === "pattern" ? "var(--overdue)" : m.verdict === "watch" ? "var(--short)" : "var(--paid-text)";
+  return `<tr class="clickable" tabindex="0" data-mfr="${m.mfr}">
+    <td class="mfr"><b>${m.mfr}</b><span>${m.drugs.join(", ")}</span></td>
+    <td class="num">${m.claims.length}</td>
+    <td class="num">${usd0(m.owed)}</td>
+    <td><div class="ontime-bar">
+      <span style="font-variant-numeric:tabular-nums;font-weight:600;min-width:38px">${pct === null ? "—" : pct + "%"}</span>
+      <span class="ontime-track"><span class="ontime-fill" style="width:${Math.max(pct || 0, 2)}%;background:${color}"></span></span>
+      <span style="color:var(--muted);font-size:11.5px;white-space:nowrap">${m.onTimeN}/${m.evaluable.length}</span>
+    </div></td>
+    <td class="num days-cell"><b>${m.med === null ? "—" : m.med}</b> <span>med</span></td>
+    <td class="num">${m.outstanding > 0 ? usd0(m.outstanding) : "—"}</td>
+    <td><span class="verdict ${m.verdict}">${VERDICT_TEXT[m.verdict]}</span></td>
+  </tr>`;
+}).join("");
+document.getElementById("scorebody").addEventListener("click", e => {
+  const row = e.target.closest("tr"); if (row) openMfrDrawer(row.dataset.mfr);
+});
+document.getElementById("scorebody").addEventListener("keydown", e => {
+  if (e.key === "Enter" || e.key === " ") { const row = e.target.closest("tr"); if (row) { e.preventDefault(); openMfrDrawer(row.dataset.mfr); } }
+});
+
+/* ---------- exception taxonomy ---------- */
+
+document.getElementById("exceptions").innerHTML = `
+  <div class="exc hi"><div class="n">${overdue.length}</div><div class="t">Overdue — ${usd0(overdueAmt)}</div>
+    <div class="d">No deposit, past the 14-day standard. Each one is a demand letter today.</div></div>
+  <div class="exc mid"><div class="n">${lates.length}</div><div class="t">Paid, but late</div>
+    <div class="d">Money arrived after the window closed. Nothing to recover — this is the evidence that a late payer is late by habit.</div></div>
+  <div class="exc mid"><div class="n">${basisShorts.length}</div><div class="t">Price-basis short — ${usd0(sum(basisShorts))}</div>
+    <div class="d">Every one short by <b>exactly ${usd(BASIS.delta)}</b>: refunds computed on the pre-Aug&nbsp;1 WAC. A systematic error, not rounding.</div></div>
+  <div class="exc lo"><div class="n">${ORPHANS.length}</div><div class="t">Unapplied deposits — ${usd0(orphanTotal)}</div>
+    <div class="d">Money in the account that matches no open claim, including one duplicate that is repayable. A totals-only reconciliation reports this as a surplus.</div></div>`;
+
+/* ---------- 2027 projection ---------- */
+
+(function projection() {
+  const perWeek = sumExpected(CLAIMS) / weeks;
+  const scale = 25 / 10;                       // 15 more negotiated drugs take effect Jan 1, 2027
+  document.getElementById("projection").innerHTML = `
+    <div class="proj now"><div class="lbl">Today — 10 negotiated drugs</div>
+      <div class="big">${usd0(perWeek)}</div>
+      <div class="sub">refunds owed per week &middot; ${usd0(peakFloat)} peak float</div></div>
+    <div class="proj next"><div class="lbl">Jan 2027 — 25 negotiated drugs</div>
+      <div class="big">${usd0(perWeek * scale)}</div>
+      <div class="sub">at this pharmacy's observed mix and payment behavior &middot; ${usd0(peakFloat * scale)} peak float</div></div>
+    <div class="proj"><div class="lbl">Same pipe, second stream</div>
+      <div class="big">340B</div>
+      <div class="sub">the rebate-model pilot routes covered-entity refunds through the same facilitator — one reconciliation engine, two receivables</div></div>`;
+})();
+
+/* ---------- manufacturer evidence pack ---------- */
+
+function mfrLetter(m) {
+  const worst = m.claims.filter(c => !c.paidDate).sort((a, b) => b.age - a.age).slice(0, 3);
+  return `Dogwood Pharmacy · 123 Maple Ave SW, Vienna, VA 22180 · NCPDP 3947261
+
+${fmtDY(TODAY)}
+
+Centers for Medicare & Medicaid Services
+Medicare Drug Price Negotiation Program — Compliance
+
+RE: Pattern of late and unpaid MFP refunds — ${m.mfr}
+
+This pharmacy dispensed ${m.claims.length} fills of ${m.drugs.join(", ")} between ${fmtDY(CLAIMS[0].fillDate)} and ${fmtDY(TODAY)}, generating ${usd(m.owed)} in manufacturer refund obligations routed through the Medicare Transaction Facilitator.
+
+Of the ${m.evaluable.length} refunds that have come due, ${m.onTimeN} (${Math.round((m.rate || 0) * 100)}%) arrived within the 14-calendar-day standard. The median interval from claim-data transmission to deposit was ${m.med} days. ${m.unpaid} further refunds totaling ${usd(sum(m.claims.filter(c => !c.paidDate)))} remain unpaid as of this date, the oldest ${worst.length ? worst[0].age : 0} days past due.
+
+Representative unpaid claims:
+${worst.map(c => `  · Rx ${c.rxNo} — ${c.drug.name}, dispensed ${fmtDY(c.fillDate)}, ${usd(c.expected)} due ${fmtDY(c.dueDate)} (${c.age} days past), transmission ${c.mtfRef}`).join("\n")}
+
+This is submitted as a pattern rather than an individual dispute: the claim-level evidence packs for all ${m.claims.length} fills accompany this referral, each tying its figures to a wholesaler invoice line, an adjudication record, a facilitator transmission reference, and the pharmacy's bank feed.
+
+We request review of ${m.mfr}'s compliance with the standard default refund requirement.
+
+Sincerely,
+[Pharmacist-in-Charge], PharmD
+Dogwood Pharmacy`;
+}
+
+function openMfrDrawer(mfrName) {
+  const m = BY_MFR.find(x => x.mfr === mfrName); if (!m) return;
+  const pct = Math.round((m.rate || 0) * 100);
+  const referable = m.verdict === "pattern";
+  const dist = [[0, 14, "Within standard"], [15, 21, "1–7 days late"], [22, 35, "8–21 days late"], [36, 999, "Over 21 days late"]];
+  const rows = dist.map(([lo, hi, label]) => {
+    const n = m.settled.filter(c => c.daysToRefund >= lo && c.daysToRefund <= hi).length;
+    const w = m.settled.length ? Math.round(n / m.settled.length * 100) : 0;
+    return `<div class="age-row"><div class="age-name"><b>${label}</b>${n} claim${n === 1 ? "" : "s"}</div>
+      <div class="age-track"><span class="age-bar-wrap" style="width:${Math.max(w, 1)}%">
+        <span class="age-bar" style="width:100%;background:${lo === 0 ? "var(--paid-text)" : lo < 22 ? "var(--age-2)" : "var(--overdue)"}"></span>
+        <span class="age-amt">${w}%</span></span></div></div>`;
+  }).join("");
+
+  drawer.innerHTML = `
+    <button class="close" aria-label="Close evidence pack">✕</button>
+    <div class="ep-tag">PATTERN EVIDENCE PACK · ${m.claims.length} CLAIMS</div>
+    <h3>${m.mfr}</h3>
+    <div class="meta">${m.drugs.join(", ")} · <span class="verdict ${m.verdict}">${VERDICT_TEXT[m.verdict]}</span></div>
+
+    <div class="calc">
+      <div class="cl"><span class="k">Refunds owed</span><span class="ref">${m.claims.length} fills</span><span class="v">${usd(m.owed)}</span></div>
+      <div class="cl"><span class="k">Paid within 14 days</span><span class="ref">${m.onTimeN} of ${m.evaluable.length} resolved</span><span class="v">${pct}%</span></div>
+      <div class="cl"><span class="k">Median days to refund</span><span class="ref">standard: 14</span><span class="v">${m.med === null ? "—" : m.med}</span></div>
+      <div class="cl variance ${m.outstanding > 0 ? "bad" : "ok"}"><span class="k">Outstanding</span>
+        <span class="ref">${m.unpaid} unpaid${m.shortN ? " · " + m.shortN + " short" : ""}</span><span class="v">${usd(m.outstanding)}</span></div>
+    </div>
+
+    <div class="sec-h">Distribution of days to refund</div>
+    <div class="aging aging-base">${rows}</div>
+
+    ${referable ? `<div class="pattern-box">A referable pattern: <b>${100 - pct}%</b> of this manufacturer's
+      refunds missed the statutory window, across <b>${m.evaluable.length}</b> claims that came due. Individually each is a
+      billing question; together they are a compliance matter.</div>` : ""}
+
+    <div class="sec-h">${referable ? "CMS referral (generated from this pack)" : "Summary letter (generated from this pack)"}</div>
+    <div class="letter" id="letter">${mfrLetter(m)}</div>
+    <div class="letterbar">
+      <button id="copyletter">Copy letter text</button>
+      <span class="copied" id="copied" hidden>Copied</span>
+    </div>
+
+    <div class="guard">Every figure above is computed from the ${m.claims.length} claim rows in the ledger, each of
+    which carries its own source records. No aggregate on this page was entered by hand. Synthetic data.</div>`;
+  drawer.hidden = false; scrim.hidden = false;
+  drawer.querySelector(".close").focus();
+  drawer.querySelector(".close").addEventListener("click", closeDrawer);
+  wireCopy();
+}
+
+function wireCopy() {
+  const cp = drawer.querySelector("#copyletter");
+  if (!cp) return;
+  cp.addEventListener("click", async () => {
+    const txt = drawer.querySelector("#letter").textContent;
+    try { await navigator.clipboard.writeText(txt); } catch (_) {
+      const rge = document.createRange(); rge.selectNodeContents(drawer.querySelector("#letter"));
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rge);
+    }
+    const ok = drawer.querySelector("#copied"); if (ok) ok.hidden = false;
+  });
+}
+
 </script>
 </body>
 </html>
